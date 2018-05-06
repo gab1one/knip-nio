@@ -1,4 +1,4 @@
-package org.knime.knip.nio.nodes.imgreader3.readfrominput;
+package org.knime.knip.nio.nodes.imgreader3.table;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,9 +26,12 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.util.Pair;
 import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.knip.base.node.nodesettings.SettingsModelSubsetSelection2;
+import org.knime.knip.nio.NIOGateway;
 import org.knime.knip.nio.nodes.imgreader3.AbstractReadImgFunction;
 import org.knime.knip.nio.nodes.imgreader3.ColumnCreationMode;
 import org.knime.knip.nio.nodes.imgreader3.URLUtil;
+import org.scijava.io.location.Location;
+import org.scijava.io.location.LocationService;
 
 /**
  * {@link Function} to read an {@link Img}, OME-XML Metadata or both from a file
@@ -41,14 +44,15 @@ class ReadImgTableFunction<T extends RealType<T> & NativeType<T>> extends Abstra
 
 	private ColumnCreationMode m_columnCreationMode;
 	private int m_stringIndex;
+	private LocationService m_locations;
 
 	public ReadImgTableFunction(ExecutionContext exec, int numberOfFiles, SettingsModelSubsetSelection2 sel,
-			boolean readImage, boolean readMetadata, boolean readAllMetaData, boolean checkFileFormat,
-			boolean isGroupFiles, int seriesSelectionFrom, int seriesSelectionTo, ImgFactory<T> imgFactory,
-			ColumnCreationMode columnCreationMode, int stringIndex, final String pixelType) {
-		super(exec, numberOfFiles, sel, readImage, readMetadata, readAllMetaData, checkFileFormat, false, isGroupFiles,
-				seriesSelectionFrom, seriesSelectionTo, imgFactory, pixelType);
+			boolean readAllMetaData, boolean checkFileFormat, boolean isGroupFiles, int seriesSelectionFrom,
+			int seriesSelectionTo, ImgFactory<T> imgFactory, ColumnCreationMode columnCreationMode, int stringIndex) {
+		super(exec, numberOfFiles, sel, readAllMetaData, checkFileFormat, false, isGroupFiles, seriesSelectionFrom,
+				seriesSelectionTo, imgFactory);
 
+		m_locations = NIOGateway.locations();
 		m_columnCreationMode = columnCreationMode;
 		m_stringIndex = stringIndex;
 	}
@@ -59,30 +63,23 @@ class ReadImgTableFunction<T extends RealType<T> & NativeType<T>> extends Abstra
 
 		if (input.getCell(m_stringIndex).isMissing()) {
 			m_exec.setProgress(Double.valueOf(m_currentFile.incrementAndGet()) / m_numberOfFiles);
-			return Arrays.asList(createResultFromException("no path specified", input.getKey().getString(),
+			return Arrays.asList(createResultFromException(null, input.getKey().getString(),
 					new IllegalArgumentException("Input was missing"))).stream();
 		}
 
 		String t = ((StringValue) input.getCell(m_stringIndex)).getStringValue();
-		String path;
+		Location path;
 		int numSeries;
 		try {
-			URL url = URLUtil.encode(t).toURL();
-			// check if its an remote address;
-			if (url.getProtocol().equalsIgnoreCase("HTTP") || url.getProtocol().equalsIgnoreCase("FTP")
-					|| url.getProtocol().equalsIgnoreCase("HTTPS")) {
-				path = url.toURI().toString();
-			} else {
-				path = ResolverUtil.resolveURItoLocalOrTempFile(url.toURI()).getAbsolutePath();
-			}
-
+			path = m_locations.resolve(t);
 			numSeries = m_imgSource.getSeriesCount(path);
 		} catch (InvalidPathException | IOException | URISyntaxException exc) {
+			// FIXME create better error handling here
 			m_exec.setProgress(Double.valueOf(m_currentFile.incrementAndGet()) / m_numberOfFiles);
-			return Arrays.asList(createResultFromException(t, input.getKey().getString(), exc)).stream();
+			return Arrays.asList(createResultFromException(null, input.getKey().getString(), exc)).stream();
 		} catch (Exception exc) {
 			m_exec.setProgress(Double.valueOf(m_currentFile.incrementAndGet()) / m_numberOfFiles);
-			return Arrays.asList(createResultFromException(t, input.getKey().getString(), exc)).stream();
+			return Arrays.asList(createResultFromException(null, input.getKey().getString(), exc)).stream();
 		}
 
 		int seriesStart = m_selectedSeriesFrom == -1 ? 0 : m_selectedSeriesFrom;
@@ -95,30 +92,25 @@ class ReadImgTableFunction<T extends RealType<T> & NativeType<T>> extends Abstra
 				rowKey = new RowKey(rowKey.getString() + "_" + currentSeries);
 			}
 
-			tempResults.add(readImageAndMetadata(path, rowKey, currentSeries));
+			tempResults.add(readImage(path, rowKey, currentSeries));
 		});
 
 		m_exec.setProgress(Double.valueOf(m_currentFile.incrementAndGet()) / m_numberOfFiles);
 
-		return createOutput(input, tempResults, m_columnCreationMode, m_stringIndex);
+		return createOutput(input, tempResults, m_columnCreationMode);
 	}
 
 	/**
-	 * Takes the input {@link DataRow}, the read images and metadata and creates
-	 * the output result row.
+	 * Takes the input {@link DataRow}, the read images and metadata and creates the
+	 * output result row.
 	 * 
-	 * @param inputRow
-	 *            the input {@link DataRow}
-	 * @param readFiles
-	 *            the {@link List} of read {@link Img}s, with {@link Optional}
-	 *            {@link Exception}s.
-	 * @param inputColumnIndex
-	 *            the column index of the path.
+	 * @param inputRow         the input {@link DataRow}
+	 * @param readFiles        the {@link List} of read {@link Img}s, with
+	 *                         {@link Optional} {@link Exception}s.
 	 * @return a {@link Stream} with the output {@link DataRow}s.
 	 */
 	private Stream<Pair<DataRow, Optional<Throwable>>> createOutput(DataRow inputRow,
-			List<Pair<DataRow, Optional<Throwable>>> readFiles, ColumnCreationMode columnCreationMode,
-			int inputColumnIndex) {
+			List<Pair<DataRow, Optional<Throwable>>> readFiles, ColumnCreationMode columnCreationMode) {
 
 		List<Pair<DataRow, Optional<Throwable>>> outputResults = new ArrayList<>();
 		if (columnCreationMode == ColumnCreationMode.NEW_TABLE) {

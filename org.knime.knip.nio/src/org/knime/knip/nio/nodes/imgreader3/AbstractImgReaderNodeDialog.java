@@ -48,9 +48,6 @@
  */
 package org.knime.knip.nio.nodes.imgreader3;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -92,16 +89,13 @@ public abstract class AbstractImgReaderNodeDialog extends DefaultNodeSettingsPan
 
 	protected void buildRemainingGUI() {
 		createNewGroup("Output");
-		addDialogComponent(new DialogComponentStringSelection(AbstractImgReaderNodeModel.createMetaDataModeModel(),
-				"OME-XML-Metadata:", EnumUtils.getStringCollectionFromToString(MetadataMode.values())));
+	
 		addDialogComponent(new DialogComponentBoolean(AbstractImgReaderNodeModel.createReadAllMetaDataModel(),
 				"Read non OME-XML Metadata"));
 
 		addDialogComponent(new DialogComponentStringSelection(AbstractImgReaderNodeModel.createImgFactoryModel(),
 				"Image factory", AbstractImgReaderNodeModel.IMG_FACTORIES));
 
-		addDialogComponent(new DialogComponentStringSelection(AbstractImgReaderNodeModel.createPixelTypeModel(),
-				"Pixel type", AbstractImgReaderNodeModel.PIXEL_TYPES));
 		closeCurrentGroup();
 
 		createNewGroup("File");
@@ -116,12 +110,7 @@ public abstract class AbstractImgReaderNodeDialog extends DefaultNodeSettingsPan
 		addDialogComponent(new DialogComponentBoolean(smReadAll, "Read all series"));
 		addDialogComponent(new DialogComponentDoubleRange(smSeriesIdx, 0, Short.MAX_VALUE, 1, "Series index"));
 
-		smReadAll.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(final ChangeEvent e) {
-				smSeriesIdx.setEnabled(!smReadAll.getBooleanValue());
-			}
-		});
+		smReadAll.addChangeListener(e -> smSeriesIdx.setEnabled(!smReadAll.getBooleanValue()));
 		smSeriesIdx.setEnabled(!smReadAll.getBooleanValue());
 
 		addDialogComponent(

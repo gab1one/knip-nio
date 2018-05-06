@@ -44,7 +44,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.nio.nodes.imgreader3.readfrominput;
+package org.knime.knip.nio.nodes.imgreader3.table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,26 +103,26 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 	/**
 	 * @return Model to store the selected column in the optional input table
 	 */
-	public static SettingsModelString createFilenameColumnModel() {
-		return new SettingsModelString("filename_column", "");
+	public static SettingsModelString createLocationColumnModel() {
+		return new SettingsModelString("URL column", "");
 	}
 
 	public static SettingsModelString createColCreationModeModel() {
-		return new SettingsModelString("m_colCreationMode", ColumnCreationMode.NEW_TABLE.toString());
+		return new SettingsModelString("column creation mode", ColumnCreationMode.NEW_TABLE.toString());
 	}
 
 	public static SettingsModelString createColSuffixNodeModel() {
-		return new SettingsModelString("m_colSuffix", "");
+		return new SettingsModelString("column suffix", "");
 	}
 
-	private final SettingsModelString m_filenameColumn = createFilenameColumnModel();
+	private final SettingsModelString m_URIColumn = createLocationColumnModel();
 	private final SettingsModelString m_colCreationMode = createColCreationModeModel();
 	private final SettingsModelString m_colSuffix = createColSuffixNodeModel();
 
 	public ImgReaderTableNodeModel() {
 		super(1, 1);
 
-		addSettingsModels(m_filenameColumn, m_colCreationMode, m_colSuffix);
+		addSettingsModels(m_URIColumn, m_colCreationMode, m_colSuffix);
 	}
 
 	@Override
@@ -319,14 +319,14 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 
 	private int getPathColIdx(final DataTableSpec inSpec) throws InvalidSettingsException {
 		int imgColIndex = -1;
-		if (null == this.m_filenameColumn.getStringValue()) {
+		if (null == this.m_URIColumn.getStringValue()) {
 			return imgColIndex;
 		}
-		imgColIndex = inSpec.findColumnIndex(this.m_filenameColumn.getStringValue());
+		imgColIndex = inSpec.findColumnIndex(this.m_URIColumn.getStringValue());
 		if (-1 == imgColIndex) {
-			if ((imgColIndex = NodeUtils.autoOptionalColumnSelection(inSpec, this.m_filenameColumn,
+			if ((imgColIndex = NodeUtils.autoOptionalColumnSelection(inSpec, this.m_URIColumn,
 					StringValue.class)) >= 0) {
-				setWarningMessage("Auto-configure Image Column: " + this.m_filenameColumn.getStringValue());
+				setWarningMessage("Auto-configure Image Column: " + this.m_URIColumn.getStringValue());
 			} else {
 				throw new InvalidSettingsException("No column selected!");
 			}
@@ -339,13 +339,6 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			final int rowCount) throws InvalidSettingsException {
 
 		final int imgIdx = getPathColIdx(inSpec);
-
-		final MetadataMode metadataMode = EnumUtils.valueForName(m_metadataModeModel.getStringValue(),
-				MetadataMode.values());
-		final boolean readImage = (metadataMode == MetadataMode.NO_METADATA
-				|| metadataMode == MetadataMode.APPEND_METADATA) ? true : false;
-		final boolean readMetadata = (metadataMode == MetadataMode.APPEND_METADATA
-				|| metadataMode == MetadataMode.METADATA_ONLY) ? true : false;
 
 		// create ImgFactory
 		ImgFactory<T> imgFac;
@@ -370,11 +363,10 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 		}
 
 		// create image function
-		final ReadImgTableFunction<T> rifp = new ReadImgTableFunction<>(exec, rowCount, m_planeSelect, readImage,
-				readMetadata, m_readAllMetaDataModel.getBooleanValue(), m_checkFileFormat.getBooleanValue(),
+		final ReadImgTableFunction<T> rifp = new ReadImgTableFunction<>(exec, rowCount, m_planeSelect,
+				m_readAllMetaDataModel.getBooleanValue(), m_checkFileFormat.getBooleanValue(),
 				m_isGroupFiles.getBooleanValue(), seriesSelectionFrom, seriesSelectionTo, imgFac,
-				ColumnCreationMode.fromString(m_colCreationMode.getStringValue()), imgIdx,
-				m_pixelType.getStringValue());
+				ColumnCreationMode.fromString(m_colCreationMode.getStringValue()), imgIdx);
 
 		return rifp;
 	}

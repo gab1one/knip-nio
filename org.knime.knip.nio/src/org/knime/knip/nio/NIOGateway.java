@@ -1,6 +1,5 @@
 package org.knime.knip.nio;
 
-import org.knime.knip.core.KNIPGateway;
 import org.knime.scijava.core.ResourceAwareClassLoader;
 import org.scijava.Context;
 import org.scijava.io.handle.DataHandleService;
@@ -8,15 +7,15 @@ import org.scijava.io.location.LocationService;
 import org.scijava.plugin.DefaultPluginFinder;
 import org.scijava.plugin.PluginIndex;
 
-public class NioGateway {
+public class NIOGateway {
 
-	private static NioGateway m_instance;
+	private static NIOGateway m_instance;
 
 	private static DataHandleService m_handles;
 	private static LocationService m_loc;
 	private static Context m_context;
 
-	private NioGateway() {
+	private NIOGateway() {
 		m_context = new Context(new PluginIndex(
 				new DefaultPluginFinder(new ResourceAwareClassLoader(getClass().getClassLoader(), getClass()))));
 	}
@@ -24,9 +23,9 @@ public class NioGateway {
 	/**
 	 * @return singleton instance of {@link KNIPGateway}
 	 */
-	public static synchronized NioGateway getInstance() {
+	public static synchronized NIOGateway getInstance() {
 		if (m_instance == null) {
-			m_instance = new NioGateway();
+			m_instance = new NIOGateway();
 		}
 		return m_instance;
 	}

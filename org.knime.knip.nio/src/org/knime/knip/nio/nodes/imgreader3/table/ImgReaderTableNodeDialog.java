@@ -46,9 +46,9 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.nio.nodes.imgreader3.readfrominput;
+package org.knime.knip.nio.nodes.imgreader3.table;
 
-import org.knime.core.data.StringValue;
+import org.knime.core.data.uri.URIDataValue;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
@@ -60,49 +60,28 @@ import org.knime.knip.nio.nodes.imgreader3.ColumnCreationMode;
  * Dialog for the ImageReader to select the files and choose some additional
  * options.
  *
- * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
- * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
- * @author <a href="mailto:gabriel.einsdorf@uni.kn"> Gabriel Einsdorf</a>
- * @author <a href="mailto:danielseebacher@t-online.de">Daniel
- *         Seebacher, University of Konstanz.</a>
+ * @author <a href="mailto:gabriel.einsdorf@knime.com"> Gabriel Einsdorf</a>
  */
 public class ImgReaderTableNodeDialog extends AbstractImgReaderNodeDialog {
-
-	private final SettingsModelString m_fileNamesColumn;
 
 	@SuppressWarnings("unchecked")
 	public ImgReaderTableNodeDialog() {
 		super();
 
-		createNewGroup("File Input Column");
-		m_fileNamesColumn = ImgReaderTableNodeModel.createFilenameColumnModel();
-		addDialogComponent(new DialogComponentColumnNameSelection(m_fileNamesColumn,
-				"File name column in input table", 0, true, false, StringValue.class));
+		createNewGroup("Location Input Column");
+		addDialogComponent(new DialogComponentColumnNameSelection(ImgReaderTableNodeModel.createLocationColumnModel(),
+				"Location URI column in input table", 0, true, false, URIDataValue.class));
 		closeCurrentGroup();
 
 		super.buildRemainingGUI();
 
 		createNewTab("Column Settings");
-		SettingsModelString m_smColCreationMode = ImgReaderTableNodeModel.createColCreationModeModel();
-		addDialogComponent(new DialogComponentStringSelection(m_smColCreationMode, "Column Creation Mode",
+		SettingsModelString smColCreationMode = ImgReaderTableNodeModel.createColCreationModeModel();
+		addDialogComponent(new DialogComponentStringSelection(smColCreationMode, "Column Creation Mode",
 				ColumnCreationMode.getModes()));
 
-		SettingsModelString m_smColumnSuffix = ImgReaderTableNodeModel.createColSuffixNodeModel();
-		addDialogComponent(new DialogComponentString(m_smColumnSuffix, "Column Suffix"));
+		SettingsModelString smColumnSuffix = ImgReaderTableNodeModel.createColSuffixNodeModel();
+		addDialogComponent(new DialogComponentString(smColumnSuffix, "Column Suffix"));
 	}
 
-	// @Override
-	// public void loadAdditionalSettingsFrom(final NodeSettingsRO settings,
-	// final PortObjectSpec[] specs)
-	// throws NotConfigurableException {
-	// super.loadAdditionalSettingsFrom(settings, specs);
-	// }
-	//
-	// @Override
-	// public void saveAdditionalSettingsTo(final NodeSettingsWO settings)
-	// throws InvalidSettingsException {
-	// super.saveAdditionalSettingsTo(settings);
-	// }
 }

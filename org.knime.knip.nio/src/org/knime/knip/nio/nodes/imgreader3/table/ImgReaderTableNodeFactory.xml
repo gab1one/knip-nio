@@ -6,7 +6,7 @@
 
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
 <knimeNode icon="imgreader.png" type="Manipulator">
-	<name>Image Reader (Table)</name>
+	<name>Image Reader (Table) Remote</name>
 	<shortDescription>
 		Reads images from possibly different directories and
 		imports them to the

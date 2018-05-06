@@ -48,14 +48,12 @@
  */
 package org.knime.knip.nio;
 
+import io.scif.FormatException;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
-import org.scijava.io.location.Location;
-
-import io.scif.FormatException;
-import io.scif.img.SCIFIOImgPlus;
 import net.imagej.ImgPlus;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.TypedAxis;
@@ -63,6 +61,8 @@ import net.imglib2.img.Img;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Pair;
+
+import org.scijava.io.location.Location;
 
 /**
  * Provides methods to get the actual data (image, metadata) from a specific
@@ -118,8 +118,8 @@ public interface NIOImgSource {
 	 * Retrieves the sub image at the given interval. In case of slower image
 	 * sources, the image planes should be created when needed.
 	 *
-	 * @param Location
-	 *            location location of the exact image source
+	 * @param location
+	 *             location of the exact image source
 	 * @param axisSelectionConstraints
 	 *            allows to specify selected indices for the axes. Per default all
 	 *            indices are considered to be selected <br>
@@ -134,39 +134,6 @@ public interface NIOImgSource {
 	@SuppressWarnings("rawtypes")
 	public ImgPlus<RealType> getImg(final Location location, final int currentSeries,
 			final Pair<TypedAxis, long[]>[] axisSelectionConstraints) throws Exception;
-
-	/**
-	 * @param loc
-	 *            description of the exact {@link Img} source (URL, ...)
-	 * @param currentSeries
-	 *            image number in a dataset with multiple images
-	 * @return the complete image
-	 *
-	 * @throws Exception
-	 */
-	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> getTypedImg(final Location location,
-			final int currentSeries, final T type) throws Exception;
-
-	/**
-	 * Retrieves the sub image at the given interval. In case of slower image
-	 * sources, the image planes should be created when needed.
-	 *
-	 * @param loc
-	 *            description of the exact image source (URL, ...)
-	 * @param axisSelectionConstraints
-	 *            allows to specify selected indices for the axes. Per default all
-	 *            indices are considered to be selected <br>
-	 *            axisSelectionConstraints can be <code>null</code>
-	 * @param currentSeries
-	 *            image number in a dataset with multiple images
-	 *
-	 * @return the image plane
-	 * @throws Exception
-	 *             the appropriate exception, if the image can't be retrieved
-	 */
-	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> getTypedImg(final Location loc, final int currentSeries,
-			final Pair<TypedAxis, long[]>[] axisSelectionConstraints, final T type) throws Exception;
-
 	/**
 	 *
 	 * @param loc

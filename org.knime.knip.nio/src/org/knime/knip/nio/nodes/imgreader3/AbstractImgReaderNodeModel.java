@@ -89,12 +89,6 @@ public abstract class AbstractImgReaderNodeModel<T extends RealType<T> & NativeT
 	public static final String[] IMG_FACTORIES = new String[] { "Array Image Factory", "Planar Image Factory",
 			"Cell Image Factory" };
 
-	public static final String[] PIXEL_TYPES = { NativeTypes.BITTYPE.toString(), NativeTypes.BYTETYPE.toString(),
-			NativeTypes.DOUBLETYPE.toString(), NativeTypes.FLOATTYPE.toString(), NativeTypes.INTTYPE.toString(),
-			NativeTypes.LONGTYPE.toString(), NativeTypes.SHORTTYPE.toString(), NativeTypes.UNSIGNEDSHORTTYPE.toString(),
-			NativeTypes.UNSIGNED12BITTYPE.toString(), NativeTypes.UNSIGNEDINTTYPE.toString(),
-			NativeTypes.UNSIGNEDBYTETYPE.toString(), "< Automatic >" };
-
 	/* data table for the table cell viewer */
 	protected BufferedDataTable m_data;
 
@@ -115,13 +109,6 @@ public abstract class AbstractImgReaderNodeModel<T extends RealType<T> & NativeT
 	}
 
 	/**
-	 * @return Model to store the OME_XML-metadata column option.
-	 */
-	public static final SettingsModelBoolean createAppendOmexmlColModel() {
-		return new SettingsModelBoolean("xmlcolumns", false);
-	}
-
-	/**
 	 * @return Model for the settings holding selected image planes.
 	 */
 	public static final SettingsModelSubsetSelection2 createPlaneSelectionModel() {
@@ -135,13 +122,6 @@ public abstract class AbstractImgReaderNodeModel<T extends RealType<T> & NativeT
 		return new SettingsModelBoolean("read_all_series", true);
 	}
 
-	// /**
-	// * @return Key to store the selected series
-	// */
-	// public static final SettingsModelIntegerBounded
-	// createSeriesSelectionModel() {
-	// return new SettingsModelIntegerBounded("series_selection", 0, 0, 1000);
-	// }
 
 	public static SettingsModelDoubleRange createSeriesSelectionRangeModel() {
 		return new SettingsModelDoubleRange("series_range_selection", 0, Short.MAX_VALUE);
@@ -168,10 +148,6 @@ public abstract class AbstractImgReaderNodeModel<T extends RealType<T> & NativeT
 		return new SettingsModelBoolean("read_all_metadata", false);
 	}
 
-	public static SettingsModelString createPixelTypeModel() {
-		return new SettingsModelString("m_pixeltype", "< Automatic >");
-	}
-
 	/*
 	 * **********************************************************************
 	 * ************** SETTINGS MODELS
@@ -193,8 +169,6 @@ public abstract class AbstractImgReaderNodeModel<T extends RealType<T> & NativeT
 	protected final SettingsModelString m_metadataModeModel = createMetaDataModeModel();
 	protected final SettingsModelBoolean m_readAllMetaDataModel = createReadAllMetaDataModel();
 
-	protected final SettingsModelString m_pixelType = createPixelTypeModel();
-
 	protected final List<SettingsModel> m_settingsCollection = new ArrayList<>();
 
 	/**
@@ -208,13 +182,10 @@ public abstract class AbstractImgReaderNodeModel<T extends RealType<T> & NativeT
 		m_settingsCollection.add(m_planeSelect);
 		m_settingsCollection.add(m_imgFactory);
 		m_settingsCollection.add(m_readAllSeries);
-		// m_settingsCollection.add(m_seriesSelection);
 		m_settingsCollection.add(m_seriesRangeSelection);
 		m_settingsCollection.add(m_metadataModeModel);
 		m_settingsCollection.add(m_readAllMetaDataModel);
-		m_settingsCollection.add(m_pixelType);
 
-		// m_seriesSelection.setEnabled(false);
 		m_seriesRangeSelection.setEnabled(false);
 	}
 

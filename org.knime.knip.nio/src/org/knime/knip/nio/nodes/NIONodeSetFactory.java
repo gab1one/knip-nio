@@ -56,20 +56,14 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSetFactory;
 import org.knime.core.node.config.ConfigRO;
-import org.knime.knip.io.nodes.imgreader2.readfromdialog.ImgReader2NodeFactory;
-import org.knime.knip.nio.nodes.annotation.create.OverlayAnnotatorNodeFactory;
-import org.knime.knip.nio.nodes.annotation.edit.LabelingEditorNodeFactory;
-import org.knime.knip.nio.nodes.fileref.ImageFileRefNodeFactory;
-import org.knime.knip.nio.nodes.imgimporter.ImgImporterNodeFactory;
-import org.knime.knip.nio.nodes.imgreader3.readfrominput.ImgReaderTableNodeFactory;
-import org.knime.knip.nio.nodes.imgwriter2.ImgWriter2NodeFactory;
+import org.knime.knip.nio.nodes.imgreader3.table.ImgReaderTableNodeFactory;
 
 /**
- *@author Gabriel Einsdorf (KNIME GmbH)
+ * @author Gabriel Einsdorf (KNIME GmbH)
  */
 public class NIONodeSetFactory implements NodeSetFactory {
 
-	private final Map<String, String> m_nodeFactories = new HashMap<String, String>();
+	private final Map<String, String> m_nodeFactories = new HashMap<>();
 
 	/**
 	 * {@inheritDoc}
@@ -113,14 +107,7 @@ public class NIONodeSetFactory implements NodeSetFactory {
 	 */
 	@Override
 	public Collection<String> getNodeFactoryIds() {
-		// m_nodeFactories.put(ImgReaderNodeFactory.class.getCanonicalName(),
-		// "/community/knip/io");
-		m_nodeFactories.put(ImgWriter2NodeFactory.class.getCanonicalName(), "/community/knip/io");
-		m_nodeFactories.put(ImgImporterNodeFactory.class.getCanonicalName(), "/community/knip/io/other");
-		m_nodeFactories.put(OverlayAnnotatorNodeFactory.class.getCanonicalName(), "/community/knip/labeling");
-		m_nodeFactories.put(ImgReader2NodeFactory.class.getCanonicalName(), "/community/knip/io");
 		m_nodeFactories.put(ImgReaderTableNodeFactory.class.getCanonicalName(), "/community/knip/io");
-		m_nodeFactories.put(LabelingEditorNodeFactory.class.getCanonicalName(), "/community/knip/labeling");
 		return m_nodeFactories.keySet();
 	}
 

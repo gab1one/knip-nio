@@ -89,15 +89,16 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Pair;
 
 /**
+ * A {@link NIOImgSource} adapted to the new scifio
+ * 
  * @author Gabriel Einsdorf
- *
  */
 public class ScifioImgSource implements NIOImgSource {
 
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(ScifioImgSource.class);
 
 	/* ID of the source */
-	private static final String SOURCE_ID = "Scifio Image Source";
+	private static final String SOURCE_ID = "New Scifio Image Source";
 
 	private UnclosableReaderFilter m_reader;
 
@@ -134,13 +135,10 @@ public class ScifioImgSource implements NIOImgSource {
 	/**
 	 * Creates a new ScifioImgSource.
 	 *
-	 * @param imgFactory
-	 *            the image factory to be used
-	 * @param checkFileFormat
-	 *            if for each new file to be read a new reader should be created or
-	 *            the old one can be re-used
-	 * @param isGroupFiles
-	 *            if a file points to a collection of files
+	 * @param imgFactory      the image factory to be used
+	 * @param checkFileFormat if for each new file to be read a new reader should be
+	 *                        created or the old one can be re-used
+	 * @param isGroupFiles    if a file points to a collection of files
 	 *
 	 */
 	public ScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
@@ -151,13 +149,10 @@ public class ScifioImgSource implements NIOImgSource {
 	/**
 	 * Creates a new ScifioImgSource.
 	 *
-	 * @param imgFactory
-	 *            the image factory to be used
-	 * @param checkFileFormat
-	 *            if for each new file to be read a new reader should be created or
-	 *            the old one can be re-used
-	 * @param config
-	 *            additional scifio-specific settings
+	 * @param imgFactory      the image factory to be used
+	 * @param checkFileFormat if for each new file to be read a new reader should be
+	 *                        created or the old one can be re-used
+	 * @param config          additional scifio-specific settings
 	 *
 	 *
 	 */
@@ -239,46 +234,6 @@ public class ScifioImgSource implements NIOImgSource {
 			throw e;
 		}
 
-	}
-
-	@Override
-	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> getTypedImg(final Location loc, final int currentSeries,
-			T type) throws Exception {
-		return getTypedImg(loc, currentSeries, null, type);
-	}
-
-	// TODO: Use new SCIFIO API
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> getTypedImg(final Location loc, final int currentSeries,
-			final Pair<TypedAxis, long[]>[] axisSelectionConstraints, T type) throws Exception {
-
-		org.apache.log4j.Logger.getLogger(KNIPLogService.class.getSimpleName()).setLevel(Level.ERROR);
-
-		final SCIFIOConfig options = new SCIFIOConfig();
-		options.imgOpenerSetComputeMinMax(false);
-		options.imgOpenerSetIndex(currentSeries);
-		// boolean withCropping = false;
-
-		if (axisSelectionConstraints != null && axisSelectionConstraints.length > 0) {
-
-			// withCropping = true;
-			// TODO: Still WRONG WRONG WRONG only 5d support?
-			final Range[] ranges = new Range[axisSelectionConstraints.length];
-			final AxisType[] axes = new AxisType[axisSelectionConstraints.length];
-			for (int i = 0; i < ranges.length; i++) {
-				ranges[i] = new Range(axisSelectionConstraints[i].getB());
-				axes[i] = axisSelectionConstraints[i].getA().type();
-			}
-
-			options.imgOpenerSetRegion(new ImageRegion(axes, ranges));
-		}
-
-		final ImgPlus<T> ret = MiscViews.cleanImgPlus(
-				((List<ImgPlus<T>>) m_imgOpener.openImgs(getReader(loc), type, m_imgFactory, options)).get(0));
-
-		org.apache.log4j.Logger.getLogger(KNIPLogService.class.getSimpleName()).setLevel(m_rootLvl);
-		return ret;
 	}
 
 	/**

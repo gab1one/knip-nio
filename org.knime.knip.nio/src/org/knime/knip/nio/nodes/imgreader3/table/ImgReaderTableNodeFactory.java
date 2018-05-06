@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.nio.nodes.imgreader3.readfrominput;
+package org.knime.knip.nio.nodes.imgreader3.table;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
@@ -82,7 +82,7 @@ public class ImgReaderTableNodeFactory<T extends NativeType<T> & RealType<T>>
 	 */
 	@Override
 	public ImgReaderTableNodeModel<T> createNodeModel() {
-		return new ImgReaderTableNodeModel<T>();
+		return new ImgReaderTableNodeModel<>();
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class ImgReaderTableNodeFactory<T extends NativeType<T> & RealType<T>>
 	@Override
 	public NodeView<ImgReaderTableNodeModel<T>> createNodeView(final int i,
 			final ImgReaderTableNodeModel<T> nodeModel) {
-		return new CellNodeView<ImgReaderTableNodeModel<T>>(nodeModel);
+		return new CellNodeView<>(nodeModel);
 	}
 
 	/**
