@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: KNIP-nio libs
+Bundle-SymbolicName: org.knime.knip.nio.libs;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-ClassPath: nio-libs.jar,
+ libs/mapdb-1.0.3.jar,
+ libs/scifio-1.0.0-SNAPSHOT.jar
+Bundle-Vendor: 
+Require-Bundle: org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: io.scif,
+ io.scif.app,
+ io.scif.codec,
+ io.scif.common,
+ io.scif.config,
+ io.scif.enumeration,
+ io.scif.filters,
+ io.scif.formats,
+ io.scif.formats.dicom,
+ io.scif.formats.qt,
+ io.scif.formats.tiff,
+ io.scif.gui,
+ io.scif.img,
+ io.scif.img.axes,
+ io.scif.img.cell,
+ io.scif.img.cell.cache,
+ io.scif.img.cell.loaders,
+ io.scif.img.converters,
+ io.scif.io,
+ io.scif.io.location,
+ io.scif.refs,
+ io.scif.services,
+ io.scif.util,
+ io.scif.xml,
+ org.mapdb

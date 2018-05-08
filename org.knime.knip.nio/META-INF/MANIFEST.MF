@@ -14,17 +14,17 @@ Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  org.knime.knip.base;bundle-version="[1.5.0,2.0.0)",
  org.knime.knip.io;bundle-version="[1.5.0,2.0.0)",
  imglib2-roi;bundle-version="0.3.1",
+ scijava-common;bundle-version="2.72.1",
  org.apache.log4j;bundle-version="1.2.15",
  org.knime.knip.cellviewer;bundle-version="1.5.0",
- org.knime.scijava.core;bundle-version="0.6.1",
  imagej-common;bundle-version="0.24.4",
  org.knime.base.filehandling;bundle-version="3.6.0",
- org.knime.core.data.uritype;bundle-version="3.6.0"
+ org.knime.core.data.uritype;bundle-version="3.6.0",
+ org.knime.scijava.core;bundle-version="0.6.1",
+ org.knime.knip.nio.libs;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: knip-io.jar,
- lib/scijava-common-2.72.1-SNAPSHOT.jar,
- lib/scifio-1.0.0-SNAPSHOT.jar
+Bundle-ClassPath: knip-io.jar
 Export-Package: org.knime.knip.nio,
  org.knime.knip.nio.nodes,
  org.knime.knip.nio.nodes.imgreader3,
