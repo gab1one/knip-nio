@@ -1,11 +1,15 @@
 package org.knime.knip.nio;
 
+import io.scif.SCIFIO;
+
+import org.knime.knip.core.KNIPGateway;
 import org.knime.scijava.core.ResourceAwareClassLoader;
 import org.scijava.Context;
 import org.scijava.io.handle.DataHandleService;
 import org.scijava.io.location.LocationService;
 import org.scijava.plugin.DefaultPluginFinder;
 import org.scijava.plugin.PluginIndex;
+import org.scijava.service.Service;
 
 public class NIOGateway {
 
@@ -14,6 +18,8 @@ public class NIOGateway {
 	private static DataHandleService m_handles;
 	private static LocationService m_loc;
 	private static Context m_context;
+
+	private static SCIFIO m_scifio;
 
 	private NIOGateway() {
 		m_context = new Context(new PluginIndex(
@@ -45,5 +51,20 @@ public class NIOGateway {
 			m_loc = getInstance().m_context.getService(LocationService.class);
 		}
 		return m_loc;
+	}
+
+	public static SCIFIO scifio() {
+		if (m_scifio == null) {
+			m_scifio = new SCIFIO(getInstance().m_context);
+		}
+		return m_scifio;
+	}
+
+	public static <S extends Service> S getService(Class<S> c) {
+		return getInstance().m_context.getService(c);
+	}
+
+	public static Context context() {
+		return getInstance().m_context;
 	}
 }

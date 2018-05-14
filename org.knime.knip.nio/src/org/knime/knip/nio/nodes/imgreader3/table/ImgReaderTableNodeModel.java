@@ -18,6 +18,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.uri.URIDataValue;
 import org.knime.core.data.xml.XMLCell;
@@ -91,11 +92,12 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 	@Override
 	protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
 		ImgPlusCellFactory cellFactory = new ImgPlusCellFactory(exec);
-
 		final AtomicInteger errorCount = new AtomicInteger(0);
 
+		PortObjectSpec[] outSpec = createOutSpec(new PortObjectSpec[] { inObjects[0].getSpec(), inObjects[1].getSpec() });
+
 		final BufferedDataTable in = (BufferedDataTable) inObjects[DATA_PORT];
-		final BufferedDataContainer container = exec.createDataContainer(in.getDataTableSpec());
+		final BufferedDataContainer container = exec.createDataContainer((DataTableSpec) outSpec[0]);
 		final int uriColIdx = getUriColIdx(in.getDataTableSpec());
 
 		ConnectionInformation connectionInfo = null;
@@ -125,7 +127,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			}
 
 			ImgPlus<RealType> img = source.getImg(resolved, 0);
-			container.addRowToTable(new DefaultRow(row.getKey(), cellFactory.createCell(img)));
+			container.addRowToTable(new DefaultRow(row.getKey(), cellFactory.createCell(img), new StringCell("0")));
 		}
 
 		container.close();

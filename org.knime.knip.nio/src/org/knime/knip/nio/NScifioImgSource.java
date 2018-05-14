@@ -160,7 +160,7 @@ public class NScifioImgSource implements NIOImgSource {
 			final SCIFIOConfig config) {
 		m_scifioConfig = config;
 		m_checkFileFormat = checkFileFormat;
-		m_imgOpener = new ImgOpener(ScifioGateway.getSCIFIO().getContext());
+		m_imgOpener = new ImgOpener(NIOGateway.context());
 		m_imgFactory = imgFactory;
 		m_usedDifferentReaders = false;
 
@@ -300,7 +300,7 @@ public class NScifioImgSource implements NIOImgSource {
 	public RealType getPixelType(final Location loc, final int currentSeries) throws IOException, FormatException {
 
 		if (m_imgUtilsService == null) {
-			m_imgUtilsService = ScifioGateway.getSCIFIO().getContext().getService(ImgUtilityService.class);
+			m_imgUtilsService = NIOGateway.getService(ImgUtilityService.class);
 		}
 
 		final RealType type = m_imgUtilsService
@@ -313,8 +313,9 @@ public class NScifioImgSource implements NIOImgSource {
 	private UnclosableReaderFilter getReader(final Location loc) throws FormatException, IOException {
 		org.apache.log4j.Logger.getLogger(KNIPLogService.class.getSimpleName()).setLevel(Level.ERROR);
 		if (m_reader == null || (!m_currentFile.equals(loc) && m_checkFileFormat)) {
-			final Format format = ScifioGateway.getSCIFIO().format().getFormat(loc,
+			final Format format = NIOGateway.scifio().format().getFormat(loc,
 					new SCIFIOConfig().checkerSetOpen(true));
+			
 
 			final UnclosableReaderFilter r = new UnclosableReaderFilter(format.createReader());
 
