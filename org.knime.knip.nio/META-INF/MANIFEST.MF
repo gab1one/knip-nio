@@ -3,18 +3,16 @@ Bundle-Name: KNIME Image Processing new IO
 Bundle-SymbolicName: org.knime.knip.nio;singleton:=true
 Bundle-ManifestVersion: 2
 Bundle-Version: 1.6.1.qualifier
-Eclipse-BuddyPolicy: registered
 Bundle-Vendor: University of Konstanz
 Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  org.knime.workbench.repository;bundle-version="[3.0.0,4.0.0)",
  org.eclipse.core.runtime;bundle-version="3.6.0",
  org.eclipse.ui;bundle-version="3.6.0",
+ scijava-common;bundle-version="2.72.1",
  imglib2;bundle-version="2.3.0",
  org.knime.knip.core;bundle-version="[1.5.0,2.0.0)",
  org.knime.knip.base;bundle-version="[1.5.0,2.0.0)",
- org.knime.knip.io;bundle-version="[1.5.0,2.0.0)",
  imglib2-roi;bundle-version="0.3.1",
- scijava-common;bundle-version="2.72.1",
  org.apache.log4j;bundle-version="1.2.15",
  org.knime.knip.cellviewer;bundle-version="1.5.0",
  imagej-common;bundle-version="0.24.4",
@@ -24,8 +22,11 @@ Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  org.knime.knip.nio.libs;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: knip-io.jar
+Bundle-ClassPath: .,
+ knip-io.jar,
+ lib/scijava-search-0.4.2-SNAPSHOT.jar
 Export-Package: org.knime.knip.nio,
  org.knime.knip.nio.nodes,
  org.knime.knip.nio.nodes.imgreader3,
- org.knime.knip.nio.nodes.imgreader3.table
+ org.knime.knip.nio.nodes.imgreader3.table,
+ org.knime.knip.nio.resolver

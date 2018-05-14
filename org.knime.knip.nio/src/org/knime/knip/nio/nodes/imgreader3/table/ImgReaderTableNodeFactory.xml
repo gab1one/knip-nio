@@ -121,8 +121,12 @@
 	</fullDescription>
 
 	<ports>
-		<inPort name="File names" index="0">Input table
-			with a column containing the file names/paths.</inPort>
+		<inPort name="Conenction information" index="0" optional="true">Connection
+			information needed to connect to a remote host.</inPort>
+		<inPort name="URIs" index="1">Input table
+			with a column containing
+			uris of image file.
+		</inPort>
 		<outPort index="0" name="Images">
 			The opened images and optionally a
 			column with the metadata.

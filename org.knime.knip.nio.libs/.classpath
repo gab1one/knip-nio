@@ -4,6 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/mapdb-1.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/scifio-1.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/scifio-1.0.0-SNAPSHOT.jar" sourcepath="libs/scifio-1.0.0-SNAPSHOT-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/scifio-jai-imageio-1.1.2-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

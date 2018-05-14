@@ -57,14 +57,8 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * The Factory class for the Image Reader.
+ * The Factory class for the Image Reader Remote.
  *
- * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
- * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
- * @author <a href="mailto:danielseebacher@t-online.de">Daniel Seebacher,
- *         University of Konstanz.</a>
  */
 public class ImgReaderTableNodeFactory<T extends NativeType<T> & RealType<T>>
 		extends NodeFactory<ImgReaderTableNodeModel<T>> {

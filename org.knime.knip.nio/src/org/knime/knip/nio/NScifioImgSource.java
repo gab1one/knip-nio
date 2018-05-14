@@ -48,20 +48,6 @@
  */
 package org.knime.knip.nio;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Level;
-import org.knime.core.node.NodeLogger;
-import org.knime.knip.base.exceptions.KNIPRuntimeException;
-import org.knime.knip.core.KNIPLogService;
-import org.knime.knip.core.types.NativeTypes;
-import org.knime.knip.core.util.MiscViews;
-import org.scijava.io.location.Location;
-
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
@@ -77,6 +63,13 @@ import io.scif.img.ImageRegion;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgUtilityService;
 import io.scif.img.Range;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -84,18 +77,25 @@ import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.TypedAxis;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Pair;
+
+import org.apache.log4j.Level;
+import org.knime.core.node.NodeLogger;
+import org.knime.knip.base.exceptions.KNIPRuntimeException;
+import org.knime.knip.core.KNIPLogService;
+import org.knime.knip.core.types.NativeTypes;
+import org.knime.knip.core.util.MiscViews;
+import org.scijava.io.location.Location;
 
 /**
  * A {@link NIOImgSource} adapted to the new scifio
  * 
  * @author Gabriel Einsdorf
  */
-public class ScifioImgSource implements NIOImgSource {
+public class NScifioImgSource implements NIOImgSource {
 
-	private static final NodeLogger LOGGER = NodeLogger.getLogger(ScifioImgSource.class);
+	private static final NodeLogger LOGGER = NodeLogger.getLogger(NScifioImgSource.class);
 
 	/* ID of the source */
 	private static final String SOURCE_ID = "New Scifio Image Source";
@@ -123,12 +123,12 @@ public class ScifioImgSource implements NIOImgSource {
 
 	private Level m_rootLvl;
 
-	public ScifioImgSource() {
+	public NScifioImgSource() {
 		this(true);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ScifioImgSource(final boolean checkFileFormat) {
+	public NScifioImgSource(final boolean checkFileFormat) {
 		this(new ArrayImgFactory(), checkFileFormat, true);
 	}
 
@@ -141,7 +141,7 @@ public class ScifioImgSource implements NIOImgSource {
 	 * @param isGroupFiles    if a file points to a collection of files
 	 *
 	 */
-	public ScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
+	public NScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
 			final boolean isGroupFiles) {
 		this(imgFactory, checkFileFormat, new SCIFIOConfig().groupableSetGroupFiles(isGroupFiles));
 	}
@@ -156,7 +156,7 @@ public class ScifioImgSource implements NIOImgSource {
 	 *
 	 *
 	 */
-	public ScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
+	public NScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
 			final SCIFIOConfig config) {
 		m_scifioConfig = config;
 		m_checkFileFormat = checkFileFormat;

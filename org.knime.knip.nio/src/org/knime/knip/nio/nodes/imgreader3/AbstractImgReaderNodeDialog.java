@@ -61,18 +61,14 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.knip.base.node.dialog.DialogComponentSubsetSelection2;
 import org.knime.knip.core.util.EnumUtils;
+import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
 
 /**
  * Dialog for the ImageReader to select the files and choose some additional
  * options.
  *
- * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
- * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
  * @author <a href="mailto:gabriel.einsdorf@uni.kn"> Gabriel Einsdorf</a>
- * @author <a href="mailto:danielseebacher@t-online.de">Daniel Seebacher,
- *         University of Konstanz.</a>
+ *
  */
 public abstract class AbstractImgReaderNodeDialog extends DefaultNodeSettingsPane {
 
@@ -89,38 +85,42 @@ public abstract class AbstractImgReaderNodeDialog extends DefaultNodeSettingsPan
 
 	protected void buildRemainingGUI() {
 		createNewGroup("Output");
-	
-		addDialogComponent(new DialogComponentBoolean(AbstractImgReaderNodeModel.createReadAllMetaDataModel(),
+		addDialogComponent(new DialogComponentStringSelection(ImgReaderSettings.createMetaDataModeModel(),
+				"OME-XML-Metadata:", EnumUtils.getStringCollectionFromToString(MetadataMode.values())));
+		addDialogComponent(new DialogComponentBoolean(ImgReaderSettings.createReadAllMetaDataModel(),
 				"Read non OME-XML Metadata"));
 
-		addDialogComponent(new DialogComponentStringSelection(AbstractImgReaderNodeModel.createImgFactoryModel(),
-				"Image factory", AbstractImgReaderNodeModel.IMG_FACTORIES));
-
+		addDialogComponent(new DialogComponentStringSelection(ImgReaderSettings.createImgFactoryModel(),
+				"Image factory", EnumUtils.getStringCollectionFromToString(ImgFactoryMode.values())));
 		closeCurrentGroup();
 
 		createNewGroup("File");
-		addDialogComponent(new DialogComponentBoolean(AbstractImgReaderNodeModel.createCheckFileFormatModel(),
+		addDialogComponent(new DialogComponentBoolean(ImgReaderSettings.createCheckFileFormatModel(),
 				"Check file format for each file (may be slower)"));
 		closeCurrentGroup();
 
-
 		createNewGroup("Series & Groups");
-		final SettingsModelBoolean smReadAll = AbstractImgReaderNodeModel.createReadAllSeriesModel();
-		final SettingsModelDoubleRange smSeriesIdx = AbstractImgReaderNodeModel.createSeriesSelectionRangeModel();
-		addDialogComponent(new DialogComponentBoolean(smReadAll, "Read all series"));
-		addDialogComponent(new DialogComponentDoubleRange(smSeriesIdx, 0, Short.MAX_VALUE, 1, "Series index"));
-
-		smReadAll.addChangeListener(e -> smSeriesIdx.setEnabled(!smReadAll.getBooleanValue()));
-		smSeriesIdx.setEnabled(!smReadAll.getBooleanValue());
+		final SettingsModelBoolean readAllSeriesModel = ImgReaderSettings.createReadAllSeriesModel();
+		final SettingsModelDoubleRange seriesSelectionRangeModel = ImgReaderSettings.createSeriesSelectionRangeModel();
+		addDialogComponent(new DialogComponentBoolean(readAllSeriesModel, "Read all series"));
+		addDialogComponent(
+				new DialogComponentDoubleRange(seriesSelectionRangeModel, 0, Short.MAX_VALUE, 1, "Series index"));
 
 		addDialogComponent(
-				new DialogComponentBoolean(AbstractImgReaderNodeModel.createIsGroupFilesModel(), "Load group files?"));
+				new DialogComponentBoolean(ImgReaderSettings.createAppendSeriesNumberModel(), "Append series number"));
+
+		readAllSeriesModel
+				.addChangeListener(e -> seriesSelectionRangeModel.setEnabled(!readAllSeriesModel.getBooleanValue()));
+		seriesSelectionRangeModel.setEnabled(!readAllSeriesModel.getBooleanValue());
+
+		addDialogComponent(
+				new DialogComponentBoolean(ImgReaderSettings.createIsGroupFilesModel(), "Load group files?"));
 		closeCurrentGroup();
 
 		createNewTab("Subset Selection");
 		createNewGroup("Image Subset Selection");
-		addDialogComponent(new DialogComponentSubsetSelection2(AbstractImgReaderNodeModel.createPlaneSelectionModel(),
-				true, true, new int[] { 0, 1 }));
+		addDialogComponent(new DialogComponentSubsetSelection2(ImgReaderSettings.createPlaneSelectionModel(), true,
+				true, new int[] { 0, 1 }));
 		closeCurrentGroup();
 	}
 }
