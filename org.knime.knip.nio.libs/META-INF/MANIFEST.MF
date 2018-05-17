@@ -4,7 +4,6 @@ Bundle-Name: KNIP-nio libs
 Bundle-SymbolicName: org.knime.knip.nio.libs;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-ClassPath: nio-libs.jar,
- libs/mapdb-1.0.3.jar,
  libs/scifio-1.0.0-SNAPSHOT.jar,
  libs/scifio-jai-imageio-1.1.2-SNAPSHOT.jar
 Bundle-Vendor: 
@@ -30,7 +29,6 @@ Export-Package: io.scif,
  io.scif.img,
  io.scif.img.axes,
  io.scif.img.cell,
- io.scif.img.cell.cache,
  io.scif.img.cell.loaders,
  io.scif.img.converters,
  io.scif.io,
@@ -83,5 +81,4 @@ Export-Package: io.scif,
  io.scif.refs,
  io.scif.services,
  io.scif.util,
- io.scif.xml,
- org.mapdb
+ io.scif.xml
