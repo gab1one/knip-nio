@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.imagej.ImgPlus;
+import net.imglib2.img.ImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -18,7 +19,6 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.uri.URIDataValue;
 import org.knime.core.data.xml.XMLCell;
@@ -38,7 +38,6 @@ import org.knime.core.node.streamable.InputPortRole;
 import org.knime.core.node.streamable.OutputPortRole;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.streamable.PortInput;
-import org.knime.core.node.streamable.PortObjectInput;
 import org.knime.core.node.streamable.PortOutput;
 import org.knime.core.node.streamable.RowInput;
 import org.knime.core.node.streamable.RowOutput;
@@ -52,7 +51,7 @@ import org.knime.knip.nio.NScifioImgSource;
 import org.knime.knip.nio.nodes.imgreader3.AbstractImgReaderNodeModel;
 import org.knime.knip.nio.nodes.imgreader3.ColumnCreationMode;
 import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings;
-import org.knime.knip.nio.nodes.imgreader3.MetadataMode;
+import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
 import org.knime.knip.nio.resolver.AuthAwareResolver;
 import org.scijava.io.location.Location;
 import org.scijava.io.location.LocationResolver;
@@ -65,10 +64,10 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 	protected static final NodeLogger LOGGER = NodeLogger.getLogger(ImgReaderTableNodeModel.class);
 
 	/** Settings Models */
-	private final SettingsModelColumnName filenameColumnModel = ImgReaderSettings.createFileURIColumnModel();
-	private final SettingsModelString columnCreationModeModel = ImgReaderSettings.createColumnCreationModeModel();
-	private final SettingsModelString columnSuffixModel = ImgReaderSettings.createColumnSuffixNodeModel();
-	private final SettingsModelBoolean appendSeriesNumberModel = ImgReaderSettings.createAppendSeriesNumberModel();
+	private final SettingsModelColumnName m_filenameColumnModel = ImgReaderSettings.createFileURIColumnModel();
+	private final SettingsModelString m_columnCreationModeModel = ImgReaderSettings.createColumnCreationModeModel();
+	private final SettingsModelString m_columnSuffixModel = ImgReaderSettings.createColumnSuffixNodeModel();
+	private final SettingsModelBoolean m_appendSeriesNumberModel = ImgReaderSettings.createAppendSeriesNumberModel();
 
 	private boolean useRemote;
 	private final LocationService loc = NIOGateway.locations();
@@ -77,7 +76,8 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 		super(new PortType[] { ConnectionInformationPortObject.TYPE_OPTIONAL, BufferedDataTable.TYPE },
 				new PortType[] { BufferedDataTable.TYPE });
 
-		addAdditionalSettingsModels(Arrays.asList(filenameColumnModel, columnCreationModeModel, columnSuffixModel));
+		addAdditionalSettingsModels(
+				Arrays.asList(m_filenameColumnModel, m_columnCreationModeModel, m_columnSuffixModel));
 	}
 
 	@Override
@@ -91,10 +91,11 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 
 	@Override
 	protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-		ImgPlusCellFactory cellFactory = new ImgPlusCellFactory(exec);
+		final ImgPlusCellFactory cellFactory = new ImgPlusCellFactory(exec);
 		final AtomicInteger errorCount = new AtomicInteger(0);
 
-		PortObjectSpec[] outSpec = createOutSpec(new PortObjectSpec[] { inObjects[0].getSpec(), inObjects[1].getSpec() });
+		final PortObjectSpec[] outSpec = createOutSpec(
+				new PortObjectSpec[] { inObjects[0].getSpec(), inObjects[1].getSpec() });
 
 		final BufferedDataTable in = (BufferedDataTable) inObjects[DATA_PORT];
 		final BufferedDataContainer container = exec.createDataContainer((DataTableSpec) outSpec[0]);
@@ -105,11 +106,17 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			connectionInfo = ((ConnectionInformationPortObject) inObjects[CONNECTION_PORT]).getConnectionInformation();
 		}
 
-		final NScifioImgSource source = new NScifioImgSource();
+		final boolean checkFormat = m_checkFileFormatModel.getBooleanValue();
+		final String factoryname = m_imgFactoryModel.getStringValue();
+		final ImgFactory factory = ImgFactoryMode.getFactoryFromName(factoryname);
+
+		final boolean isGroup = m_isGroupFilesModel.getBooleanValue();
+
+		final NScifioImgSource source = new NScifioImgSource(factory, checkFormat, isGroup);
 		for (final DataRow row : in) {
 			final URI uri = ((URIDataValue) row.getCell(uriColIdx)).getURIContent().getURI();
 			Location resolved;
-			LocationResolver resolver = loc.getResolver(uri);
+			final LocationResolver resolver = loc.getResolver(uri);
 			assert resolver != null; // TODO add exception
 			if (useRemote) {
 				if (resolver instanceof AuthAwareResolver) {
@@ -126,11 +133,12 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 				throw new IllegalArgumentException("Could not resolve url: " + uri.toString());
 			}
 
-			ImgPlus<RealType> img = source.getImg(resolved, 0);
+			final ImgPlus<RealType> img = source.getImg(resolved, 0);
 			container.addRowToTable(new DefaultRow(row.getKey(), cellFactory.createCell(img), new StringCell("0")));
 		}
 
 		container.close();
+		setInternalTables(new BufferedDataTable[] { container.getTable() });
 		return new PortObject[] { container.getTable() };
 	}
 
@@ -140,16 +148,16 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 		final int uriColIdx = getUriColIdx(inSpecs[DATA_PORT]);
 
 		// initialze the settings
-		final MetadataMode metaDataMode = EnumUtils.valueForName(metadataModeModel.getStringValue(),
-				MetadataMode.values());
+//		final MetadataMode metaDataMode = EnumUtils.valueForName(metadataModeModel.getStringValue(),
+//				MetadataMode.values());
 		final DataTableSpec spec = (DataTableSpec) inSpecs[DATA_PORT];
+//
+//		final boolean readImage = metaDataMode == MetadataMode.NO_METADATA
+//				|| metaDataMode == MetadataMode.APPEND_METADATA;
+//		final boolean readMetadata = metaDataMode == MetadataMode.APPEND_METADATA
+//				|| metaDataMode == MetadataMode.METADATA_ONLY;
 
-		final boolean readImage = metaDataMode == MetadataMode.NO_METADATA
-				|| metaDataMode == MetadataMode.APPEND_METADATA;
-		final boolean readMetadata = metaDataMode == MetadataMode.APPEND_METADATA
-				|| metaDataMode == MetadataMode.METADATA_ONLY;
-
-		final ColumnCreationMode columnCreationMode = EnumUtils.valueForName(columnCreationModeModel.getStringValue(),
+		final ColumnCreationMode columnCreationMode = EnumUtils.valueForName(m_columnCreationModeModel.getStringValue(),
 				ColumnCreationMode.values());
 
 		// Create the outspec
@@ -158,14 +166,8 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 		if (columnCreationMode == ColumnCreationMode.NEW_TABLE) {
 
 			final DataTableSpecCreator specBuilder = new DataTableSpecCreator();
-
-			if (readImage) {
-				specBuilder.addColumns(new DataColumnSpecCreator("Image", ImgPlusCell.TYPE).createSpec());
-			}
-			if (readMetadata) {
-				specBuilder.addColumns(new DataColumnSpecCreator("OME-XML Metadata", XMLCell.TYPE).createSpec());
-			}
-			if (readAllSeriesModel.getBooleanValue()) {
+			specBuilder.addColumns(new DataColumnSpecCreator("Image", ImgPlusCell.TYPE).createSpec());
+			if (m_readAllSeriesModel.getBooleanValue()) {
 				specBuilder.addColumns(new DataColumnSpecCreator("Series Number", StringCell.TYPE).createSpec());
 			}
 
@@ -174,10 +176,10 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 		} else { // Append and replace
 
 			final DataColumnSpec imgSpec = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(spec, "Image" + columnSuffixModel.getStringValue()),
+					DataTableSpec.getUniqueColumnName(spec, "Image" + m_columnSuffixModel.getStringValue()),
 					ImgPlusCell.TYPE).createSpec();
 			final DataColumnSpec metaDataSpec = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(spec, "OME-XML Metadata" + columnSuffixModel.getStringValue()),
+					DataTableSpec.getUniqueColumnName(spec, "OME-XML Metadata" + m_columnSuffixModel.getStringValue()),
 					XMLCell.TYPE).createSpec();
 			final DataColumnSpec seriesNumberSpec = new DataColumnSpecCreator(
 					DataTableSpec.getUniqueColumnName(spec, "Series Number"), StringCell.TYPE).createSpec();
@@ -185,13 +187,8 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			final DataTableSpecCreator outSpecBuilder = new DataTableSpecCreator(spec);
 
 			if (columnCreationMode == ColumnCreationMode.APPEND) {
-				if (readImage) {
-					outSpecBuilder.addColumns(imgSpec);
-				}
-				if (readMetadata) {
-					outSpecBuilder.addColumns(metaDataSpec);
-				}
-				if (appendSeriesNumberModel.getBooleanValue()) {
+				outSpecBuilder.addColumns(imgSpec);
+				if (m_appendSeriesNumberModel.getBooleanValue()) {
 					outSpecBuilder.addColumns(seriesNumberSpec);
 				}
 
@@ -203,20 +200,10 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 				// additional columns.
 				boolean replaced = false;
 
-				if (readImage) {
-					// replaced is always false in this case
-					outSpecBuilder.replaceColumn(uriColIdx, imgSpec);
-					replaced = true;
-				}
-				if (readMetadata) {
-					if (!replaced) {
-						outSpecBuilder.replaceColumn(uriColIdx, metaDataSpec);
-						replaced = true;
-					} else {
-						outSpecBuilder.addColumns(metaDataSpec);
-					}
-				}
-				if (appendSeriesNumberModel.getBooleanValue()) {
+				// replaced is always false in this case
+				outSpecBuilder.replaceColumn(uriColIdx, imgSpec);
+				replaced = true;
+				if (m_appendSeriesNumberModel.getBooleanValue()) {
 					if (!replaced) {
 						outSpecBuilder.replaceColumn(uriColIdx, seriesNumberSpec);
 					} else {
@@ -228,14 +215,14 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			} else {
 				// should really not happen
 				throw new IllegalStateException("Support for the columncreation mode"
-						+ columnCreationModeModel.getStringValue() + " is not implemented!");
+						+ m_columnCreationModeModel.getStringValue() + " is not implemented!");
 			}
 		}
 		return new PortObjectSpec[] { outSpec };
 	}
 
 	private int getUriColIdx(final PortObjectSpec inSpec) throws InvalidSettingsException {
-		return NodeUtils.autoColumnSelection((DataTableSpec) inSpec, filenameColumnModel, URIDataValue.class,
+		return NodeUtils.autoColumnSelection((DataTableSpec) inSpec, m_filenameColumnModel, URIDataValue.class,
 				ImgReaderTableNodeModel.class);
 	}
 
@@ -253,33 +240,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 
 				final AtomicInteger encounteredExceptionsCount = new AtomicInteger(0);
 
-//				final ScifioImgReader<T> reader;
-//				DataRow row;
-//				final int uriColIdx = getUriColIdx(inSpecs[DATA_PORT]);
-//				if (useRemote) {
-//					final ConnectionInformationPortObject connection = (ConnectionInformationPortObject) ((PortObjectInput) inputs[CONNECTION_PORT])
-//							.getPortObject();
-//					reader = createScifioReader(exec, connection, uriColIdx);
-//				} else {
-//					reader = createLocalScifioReader(exec);
-//				}
-//
-//				// get next row from input
-//				while ((row = in.poll()) != null) {
-//
-//					// TODO Make less ugly?
-//					final ScifioReadResult<T> res = reader
-//							.read(((URIDataValue) row.getCell(uriColIdx)).getURIContent().getURI());
-//
-//					for (final DataRow resRow : res.getRows()) {
-//						out.push(resRow);
-//					}
-//
-//					// count number of errors
-//					if (!res.getError().isPresent()) {
-//						handleReadErrors(encounteredExceptionsCount, row.getKey(), res.getError().get());
-//					}
-//				}
+				// FIXME implement
 
 				in.close();
 				out.close();
@@ -287,36 +248,6 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			}
 		};
 	}
-
-//	private ScifioImgReader<T> createLocalScifioReader(final ExecutionContext exec) {
-//
-//		new ScifioReaderBuilder<>().appendSeriesNumber(true).build();
-//		return null;
-//	}
-//
-//	private ScifioImgReader<T> createScifioReader(final ExecutionContext exec,
-//			final ConnectionInformationPortObject connection, final int uriColIdx) {
-//
-//		final ScifioReaderBuilder<T> builder = new ScifioReaderBuilder<>();
-//
-//		// File settings
-//		builder.checkFileFormat(checkFileFormatModel.getBooleanValue())
-//				.metaDataMode(EnumUtils.valueForName(metadataModeModel.getStringValue(), MetadataMode.values()))
-//				.imgFactory(createImgFactory());
-//
-//		// connection info
-//		if (connection != null) {
-//			builder.connectionInfo(connection.getConnectionInformation());
-//		}
-//
-//		// Table settings
-//		builder.exec(exec);
-//		builder.uriColumnIdx(uriColIdx);
-//		builder.columnCreationMode(
-//				EnumUtils.valueForName(columnCreationModeModel.getStringValue(), ColumnCreationMode.values()));
-//
-//		return builder.build();
-//	}
 
 	@Override
 	protected void doLoadInternals(final File nodeInternDir, final ExecutionMonitor exec) {

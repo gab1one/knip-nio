@@ -1,10 +1,17 @@
 package org.knime.knip.nio.nodes.imgreader3;
 
+import net.imglib2.img.ImgFactory;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.planar.PlanarImgFactory;
+
+import io.scif.img.cell.SCIFIOCellImgFactory;
+
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.knip.base.node.nodesettings.SettingsModelSubsetSelection2;
+import org.knime.knip.core.util.EnumUtils;
 
 /**
  * Settings for the Image Reader nodes
@@ -16,18 +23,29 @@ public class ImgReaderSettings {
 	 *
 	 */
 	public enum ImgFactoryMode {
+	// FIXME update to typed versions of constructors
+	ARRAY_IMG("Array Image Factory", new ArrayImgFactory()), PLANAR_IMG("Planar Image Factory", new PlanarImgFactory()),
+	CELL_IMG("Cell Image Factory", new SCIFIOCellImgFactory());
 
-	ARRAY_IMG("Array Image Factory"), PLANAR_IMG("Planar Image Factory"), CELL_IMG("Cell Image Factory");
+		private final String m_name;
+		private final ImgFactory m_factory;
 
-		private final String name;
-
-		private ImgFactoryMode(String name) {
-			this.name = name;
+		private ImgFactoryMode(final String name, final ImgFactory factory) {
+			m_name = name;
+			m_factory = factory;
 		}
 
 		@Override
 		public String toString() {
-			return name;
+			return m_name;
+		}
+
+		public ImgFactory getFactory() {
+			return m_factory;
+		}
+
+		public static ImgFactory getFactoryFromName(final String factoryName) {
+			return EnumUtils.valueForName(factoryName, ImgFactoryMode.values()).m_factory;
 		}
 	}
 

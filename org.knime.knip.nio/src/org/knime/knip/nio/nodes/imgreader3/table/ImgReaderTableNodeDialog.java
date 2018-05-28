@@ -23,7 +23,7 @@ public class ImgReaderTableNodeDialog extends AbstractImgReaderNodeDialog {
 		createNewGroup("File Input Column");
 		fileURIColumnModel = ImgReaderSettings.createFileURIColumnModel();
 
-		addDialogComponent(new DialogComponentColumnNameSelection(fileURIColumnModel, "File URI column in input table",
+		addDialogComponent(new DialogComponentColumnNameSelection(fileURIColumnModel, "URI column in input table",
 				1, true, false, URIDataValue.class));
 		closeCurrentGroup();
 

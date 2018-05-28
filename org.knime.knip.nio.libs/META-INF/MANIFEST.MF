@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.knime.knip.nio.libs;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-ClassPath: nio-libs.jar,
  libs/scifio-1.0.0-SNAPSHOT.jar,
- libs/scifio-jai-imageio-1.1.2-SNAPSHOT.jar
+ libs/scifio-jai-imageio-1.1.2-SNAPSHOT.jar,
+ libs/imglib2-cache-1.0.0-beta-10-SNAPSHOT.jar
 Bundle-Vendor: 
 Require-Bundle: org.eclipse.core.runtime,
  imglib2;bundle-version="5.1.0",
@@ -81,4 +82,11 @@ Export-Package: io.scif,
  io.scif.refs,
  io.scif.services,
  io.scif.util,
- io.scif.xml
+ io.scif.xml,
+ net.imglib2.cache,
+ net.imglib2.cache.img,
+ net.imglib2.cache.iotiming,
+ net.imglib2.cache.queue,
+ net.imglib2.cache.ref,
+ net.imglib2.cache.util,
+ net.imglib2.cache.volatiles

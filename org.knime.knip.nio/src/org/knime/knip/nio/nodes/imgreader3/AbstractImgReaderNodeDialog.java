@@ -85,10 +85,6 @@ public abstract class AbstractImgReaderNodeDialog extends DefaultNodeSettingsPan
 
 	protected void buildRemainingGUI() {
 		createNewGroup("Output");
-		addDialogComponent(new DialogComponentStringSelection(ImgReaderSettings.createMetaDataModeModel(),
-				"OME-XML-Metadata:", EnumUtils.getStringCollectionFromToString(MetadataMode.values())));
-		addDialogComponent(new DialogComponentBoolean(ImgReaderSettings.createReadAllMetaDataModel(),
-				"Read non OME-XML Metadata"));
 
 		addDialogComponent(new DialogComponentStringSelection(ImgReaderSettings.createImgFactoryModel(),
 				"Image factory", EnumUtils.getStringCollectionFromToString(ImgFactoryMode.values())));

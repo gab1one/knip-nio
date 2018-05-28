@@ -33,42 +33,39 @@ public abstract class AbstractImgReaderNodeModel<T extends NativeType<T> & RealT
 
 	List<SettingsModel> settingsModels = new ArrayList<>();
 
-	protected final SettingsModelBoolean checkFileFormatModel = ImgReaderSettings.createCheckFileFormatModel();
-	protected final SettingsModelBoolean isGroupFilesModel = ImgReaderSettings.createIsGroupFilesModel();
-	protected final SettingsModelBoolean appendOmeXMLColModel = ImgReaderSettings.createAppendOMEXMLColModel();
+	protected final SettingsModelBoolean m_checkFileFormatModel = ImgReaderSettings.createCheckFileFormatModel();
+	protected final SettingsModelBoolean m_isGroupFilesModel = ImgReaderSettings.createIsGroupFilesModel();
+//	protected final SettingsModelBoolean appendOmeXMLColModel = ImgReaderSettings.createAppendOMEXMLColModel();
 
-	protected final SettingsModelString imgFactoryModel = ImgReaderSettings.createImgFactoryModel();
-	protected final SettingsModelBoolean readAllSeriesModel = ImgReaderSettings.createReadAllSeriesModel();
-	protected final SettingsModelDoubleRange seriesRangeSelectionModel = ImgReaderSettings
+	protected final SettingsModelString m_imgFactoryModel = ImgReaderSettings.createImgFactoryModel();
+	protected final SettingsModelBoolean m_readAllSeriesModel = ImgReaderSettings.createReadAllSeriesModel();
+	protected final SettingsModelDoubleRange m_seriesRangeSelectionModel = ImgReaderSettings
 			.createSeriesSelectionRangeModel();
 
-	protected final SettingsModelString metadataModeModel = ImgReaderSettings.createMetaDataModeModel();
-	protected final SettingsModelBoolean readAllMetaDataModel = ImgReaderSettings.createReadAllMetaDataModel();
+//	protected final SettingsModelString metadataModeModel = ImgReaderSettings.createMetaDataModeModel();
+//	protected final SettingsModelBoolean readAllMetaDataModel = ImgReaderSettings.createReadAllMetaDataModel();
 
-	private BufferedDataTable dataTable;
+	private BufferedDataTable m_dataTable;
 
 	protected AbstractImgReaderNodeModel(PortType[] inPortTypes, PortType[] outPortTypes) {
 		super(inPortTypes, outPortTypes);
 
 		// store settings models
-		settingsModels.add(checkFileFormatModel);
-		settingsModels.add(isGroupFilesModel);
-		settingsModels.add(appendOmeXMLColModel);
-		settingsModels.add(imgFactoryModel);
-		settingsModels.add(readAllSeriesModel);
-		settingsModels.add(seriesRangeSelectionModel);
-		settingsModels.add(metadataModeModel);
-		settingsModels.add(readAllMetaDataModel);
+		settingsModels.add(m_checkFileFormatModel);
+		settingsModels.add(m_isGroupFilesModel);
+		settingsModels.add(m_imgFactoryModel);
+		settingsModels.add(m_readAllSeriesModel);
+		settingsModels.add(m_seriesRangeSelectionModel);
+//		settingsModels.add(metadataModeModel);
+//		settingsModels.add(readAllMetaDataModel);
 
 		// TODO Set enabled status for dialog components
 	}
 
 	/**
-	 * Adds additional settingsModels to the node model These are saved and
-	 * loaded.
+	 * Adds additional settingsModels to the node model These are saved and loaded.
 	 * 
-	 * @param additionalSettingsModels
-	 *            the additional settings
+	 * @param additionalSettingsModels the additional settings
 	 */
 	protected void addAdditionalSettingsModels(final List<SettingsModel> additionalSettingsModels) {
 		additionalSettingsModels.forEach(settingsModels::add);
@@ -109,23 +106,23 @@ public abstract class AbstractImgReaderNodeModel<T extends NativeType<T> & RealT
 
 	@Override
 	public BufferedDataTable[] getInternalTables() {
-		return new BufferedDataTable[] { dataTable };
+		return new BufferedDataTable[] { m_dataTable };
 	}
 
 	@Override
 	public void setInternalTables(BufferedDataTable[] tables) {
-		dataTable = tables[0];
+		m_dataTable = tables[0];
 	}
 
 	@Override
 	protected void reset() {
-		dataTable = null;
+		m_dataTable = null;
 	}
 
 	protected ImgFactory<T> createImgFactory() {
-		ImgFactoryMode factorySetting = EnumUtils.valueForName(imgFactoryModel.getStringValue(),
+		ImgFactoryMode factorySetting = EnumUtils.valueForName(m_imgFactoryModel.getStringValue(),
 				ImgFactoryMode.values());
-	
+
 		ImgFactory<T> factory;
 		if (factorySetting == ImgFactoryMode.PLANAR_IMG) {
 			factory = new PlanarImgFactory<>();
