@@ -77,7 +77,9 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 				new PortType[] { BufferedDataTable.TYPE });
 
 		addAdditionalSettingsModels(
-				Arrays.asList(m_filenameColumnModel, m_columnCreationModeModel, m_columnSuffixModel));
+				Arrays.asList(m_filenameColumnModel));
+//						m_columnCreationModeModel,
+//						m_columnSuffixModel));
 	}
 
 	@Override
@@ -117,13 +119,15 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			final URI uri = ((URIDataValue) row.getCell(uriColIdx)).getURIContent().getURI();
 			Location resolved;
 			final LocationResolver resolver = loc.getResolver(uri);
-			assert resolver != null; // TODO add exception
+			if (resolver == null) {
+				 
+			}
 			if (useRemote) {
 				if (resolver instanceof AuthAwareResolver) {
 					resolved = ((AuthAwareResolver) resolver).resolveWithAuth(uri, connectionInfo);
 				} else {
-					// TODO what to do in this case?
-					throw new UnsupportedOperationException("TODO Implement this!");
+					resolved = resolver.resolve(uri);
+//					throw new UnsupportedOperationException("TODO Implement this!");
 				}
 			} else {
 				resolved = resolver.resolve(uri);
@@ -134,7 +138,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			}
 
 			final ImgPlus<RealType> img = source.getImg(resolved, 0);
-			container.addRowToTable(new DefaultRow(row.getKey(), cellFactory.createCell(img), new StringCell("0")));
+			container.addRowToTable(new DefaultRow(row.getKey(), cellFactory.createCell(img)));
 		}
 
 		container.close();
@@ -167,7 +171,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 
 			final DataTableSpecCreator specBuilder = new DataTableSpecCreator();
 			specBuilder.addColumns(new DataColumnSpecCreator("Image", ImgPlusCell.TYPE).createSpec());
-			if (m_readAllSeriesModel.getBooleanValue()) {
+			if (m_readAllSeriesModel.getBooleanValue() || m_appendSeriesNumberModel.getBooleanValue()) {
 				specBuilder.addColumns(new DataColumnSpecCreator("Series Number", StringCell.TYPE).createSpec());
 			}
 

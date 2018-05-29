@@ -51,11 +51,11 @@ public abstract class AbstractImgReaderNodeModel<T extends NativeType<T> & RealT
 		super(inPortTypes, outPortTypes);
 
 		// store settings models
-		settingsModels.add(m_checkFileFormatModel);
-		settingsModels.add(m_isGroupFilesModel);
+//		settingsModels.add(m_checkFileFormatModel);
+//		settingsModels.add(m_isGroupFilesModel);
 		settingsModels.add(m_imgFactoryModel);
-		settingsModels.add(m_readAllSeriesModel);
-		settingsModels.add(m_seriesRangeSelectionModel);
+//		settingsModels.add(m_readAllSeriesModel);
+//		settingsModels.add(m_seriesRangeSelectionModel);
 //		settingsModels.add(metadataModeModel);
 //		settingsModels.add(readAllMetaDataModel);
 

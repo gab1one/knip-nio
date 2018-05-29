@@ -53,13 +53,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
-import org.knime.core.node.defaultnodesettings.DialogComponentDoubleRange;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.knip.base.node.dialog.DialogComponentSubsetSelection2;
 import org.knime.knip.core.util.EnumUtils;
 import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
 
@@ -90,33 +85,34 @@ public abstract class AbstractImgReaderNodeDialog extends DefaultNodeSettingsPan
 				"Image factory", EnumUtils.getStringCollectionFromToString(ImgFactoryMode.values())));
 		closeCurrentGroup();
 
-		createNewGroup("File");
-		addDialogComponent(new DialogComponentBoolean(ImgReaderSettings.createCheckFileFormatModel(),
-				"Check file format for each file (may be slower)"));
-		closeCurrentGroup();
+//		createNewGroup("File");
+//		addDialogComponent(new DialogComponentBoolean(ImgReaderSettings.createCheckFileFormatModel(),
+//				"Check file format for each file (may be slower)"));
+//		closeCurrentGroup();
 
-		createNewGroup("Series & Groups");
-		final SettingsModelBoolean readAllSeriesModel = ImgReaderSettings.createReadAllSeriesModel();
-		final SettingsModelDoubleRange seriesSelectionRangeModel = ImgReaderSettings.createSeriesSelectionRangeModel();
-		addDialogComponent(new DialogComponentBoolean(readAllSeriesModel, "Read all series"));
-		addDialogComponent(
-				new DialogComponentDoubleRange(seriesSelectionRangeModel, 0, Short.MAX_VALUE, 1, "Series index"));
+//		createNewGroup("Series & Groups");
+//		final SettingsModelBoolean readAllSeriesModel = ImgReaderSettings.createReadAllSeriesModel();
+//		final SettingsModelDoubleRange seriesSelectionRangeModel = ImgReaderSettings.createSeriesSelectionRangeModel();
+//		addDialogComponent(new DialogComponentBoolean(readAllSeriesModel, "Read all series"));
+//		addDialogComponent(
+//				new DialogComponentDoubleRange(seriesSelectionRangeModel, 0, Short.MAX_VALUE, 1, "Series index"));
+//
+		// addDialogComponent(
+		// new DialogComponentBoolean(ImgReaderSettings.createAppendSeriesNumberModel(),
+		// "Append series number"));
+//
+		// readAllSeriesModel
+//				.addChangeListener(e -> seriesSelectionRangeModel.setEnabled(!readAllSeriesModel.getBooleanValue()));
+		// seriesSelectionRangeModel.setEnabled(!readAllSeriesModel.getBooleanValue());
+//
+//		addDialogComponent(
+//				new DialogComponentBoolean(ImgReaderSettings.createIsGroupFilesModel(), "Load group files?"));
+//		closeCurrentGroup();
 
-		addDialogComponent(
-				new DialogComponentBoolean(ImgReaderSettings.createAppendSeriesNumberModel(), "Append series number"));
-
-		readAllSeriesModel
-				.addChangeListener(e -> seriesSelectionRangeModel.setEnabled(!readAllSeriesModel.getBooleanValue()));
-		seriesSelectionRangeModel.setEnabled(!readAllSeriesModel.getBooleanValue());
-
-		addDialogComponent(
-				new DialogComponentBoolean(ImgReaderSettings.createIsGroupFilesModel(), "Load group files?"));
-		closeCurrentGroup();
-
-		createNewTab("Subset Selection");
-		createNewGroup("Image Subset Selection");
-		addDialogComponent(new DialogComponentSubsetSelection2(ImgReaderSettings.createPlaneSelectionModel(), true,
-				true, new int[] { 0, 1 }));
-		closeCurrentGroup();
+//		createNewTab("Subset Selection");
+//		createNewGroup("Image Subset Selection");
+//		addDialogComponent(new DialogComponentSubsetSelection2(ImgReaderSettings.createPlaneSelectionModel(), true,
+//				true, new int[] { 0, 1 }));
+//		closeCurrentGroup();
 	}
 }
