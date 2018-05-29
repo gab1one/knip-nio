@@ -2,6 +2,8 @@ package org.knime.knip.nio;
 
 import io.scif.SCIFIO;
 
+import net.imagej.ops.OpService;
+
 import org.knime.knip.core.KNIPGateway;
 import org.knime.scijava.core.ResourceAwareClassLoader;
 import org.scijava.Context;
@@ -66,5 +68,9 @@ public class NIOGateway {
 
 	public static Context context() {
 		return getInstance().m_context;
+	}
+
+	public static OpService ops() {
+		return getInstance().m_context.getService(OpService.class);
 	}
 }
