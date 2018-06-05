@@ -8,27 +8,18 @@
 <knimeNode icon="imgreader.png" type="Manipulator">
 	<name>Image Reader (Table) Remote</name>
 	<shortDescription>
-		Reads images from possibly different directories and
-		imports them to the
-		KNIME-internal image format. The images will be
-		read an as PlanarImages, which means that they are optimized for the
-		access of the first two dimensions. To convert them to another image
-		format (ArrayImg if you want to process the whole image at once)
-		please make use of
-		the converter node.
-
-		Image can also be downloaded and read from URLs (e.g. http://...). The URLs have to be provided via the input table (as strings).
+	Reads images from possibly different remote locations into a
+	KNIME-internal image format.
 	</shortDescription>
 
 	<fullDescription>
 		<intro>
 			Reads images from various file formats supported by the Bio-Formats
 			library and imports them to the KNIME-internal image format.
-			A list of
-			the supported formats can be found here:
+			A list of the supported formats can be found here:
 			<a href="http://loci.wisc.edu/bio-formats/formats">http://loci.wisc.edu/bio-formats/formats</a>.
 
-			Image can also be downloaded and read from URLs (e.g. http://...). The URLs have to be provided via the input table (as strings).
+			The image locations have to be provides as URI's as well as a fitting connection information needs to be present. 
 		</intro>
 		<tab name="Options">
 			<option name="File name column in input table">If another node with a string column is plugged
@@ -121,7 +112,7 @@
 	</fullDescription>
 
 	<ports>
-		<inPort name="Conenction information" index="0" optional="true">Connection
+		<inPort name="Conenction information" index="0">Connection
 			information needed to connect to a remote host.</inPort>
 		<inPort name="URIs" index="1">Input table
 			with a column containing

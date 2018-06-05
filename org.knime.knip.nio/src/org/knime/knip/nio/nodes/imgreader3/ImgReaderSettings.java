@@ -105,7 +105,7 @@ public class ImgReaderSettings {
 	}
 
 	public static SettingsModelString createColumnCreationModeModel() {
-		return new SettingsModelColumnName("Column creation mode", ColumnCreationMode.NEW_TABLE.toString());
+		return new SettingsModelColumnName("Column creation mode", ColumnCreationMode.APPEND.toString());
 	}
 
 	public static SettingsModelString createColumnSuffixNodeModel() {
