@@ -17,6 +17,7 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
+import org.knime.core.data.MissingCell;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.append.AppendedColumnRow;
 import org.knime.core.data.def.DefaultRow;
@@ -60,8 +61,8 @@ import org.scijava.io.location.LocationService;
 
 public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> extends AbstractImgReaderNodeModel<T> {
 
-	private static final int CONNECTION_PORT = 0;
-	private static final int DATA_PORT = 1;
+	private static final int CONNECTION = 0;
+	private static final int DATA = 1;
 	protected static final NodeLogger LOGGER = NodeLogger.getLogger(ImgReaderTableNodeModel.class);
 
 	/** Settings Models */
@@ -73,7 +74,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 	private final LocationService loc = NIOGateway.locations();
 
 	protected ImgReaderTableNodeModel() {
-		super(new PortType[] { ConnectionInformationPortObject.TYPE, BufferedDataTable.TYPE },
+		super(new PortType[] { ConnectionInformationPortObject.TYPE_OPTIONAL, BufferedDataTable.TYPE },
 				new PortType[] { BufferedDataTable.TYPE });
 
 		addAdditionalSettingsModels(Arrays.asList(m_filenameColumnModel));
@@ -93,14 +94,16 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 		final AtomicInteger errorCount = new AtomicInteger(0);
 
 		final PortObjectSpec[] outSpec = createOutSpec(
-				new PortObjectSpec[] { inObjects[0].getSpec(), inObjects[1].getSpec() });
+				new PortObjectSpec[] { inObjects[CONNECTION].getSpec(), inObjects[DATA].getSpec() });
 
-		final BufferedDataTable in = (BufferedDataTable) inObjects[DATA_PORT];
+		final BufferedDataTable in = (BufferedDataTable) inObjects[DATA];
 		final BufferedDataContainer container = exec.createDataContainer((DataTableSpec) outSpec[0]);
 		final int uriColIdx = getUriColIdx(in.getDataTableSpec());
 
-		ConnectionInformation connectionInfo = ((ConnectionInformationPortObject) inObjects[CONNECTION_PORT])
-				.getConnectionInformation();
+		ConnectionInformation connectionInfo = null;
+		if (inObjects[CONNECTION] != null) {
+			connectionInfo = ((ConnectionInformationPortObject) inObjects[CONNECTION]).getConnectionInformation();
+		}
 
 		final boolean checkFormat = m_checkFileFormatModel.getBooleanValue();
 		final String factoryname = m_imgFactoryModel.getStringValue();
@@ -117,8 +120,14 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 				throw new IllegalArgumentException("No resulver found for location: " + loc.toString());
 			}
 
-			// 
+			//
 			if (resolver instanceof AuthAwareResolver) {
+				if (connectionInfo == null) {
+					// FIXME log warning, increase warning counter
+					container.addRowToTable(new AppendedColumnRow(row,
+							new MissingCell("Connection information required but not provided!")));
+					continue;
+				}
 				resolved = ((AuthAwareResolver) resolver).resolveWithAuth(uri, connectionInfo);
 			} else {
 				resolved = resolver.resolve(uri);
@@ -128,6 +137,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 				throw new IllegalArgumentException("Could not resolve url: " + uri.toString());
 			}
 
+			// TODO add series reading!
 			final ImgPlus<RealType> img = source.getImg(resolved, 0);
 			container.addRowToTable(new AppendedColumnRow(row, cellFactory.createCell(img)));
 		}
@@ -140,11 +150,11 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 	private PortObjectSpec[] createOutSpec(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 
 		// ensure there is a valid column
-		final int uriColIdx = getUriColIdx(inSpecs[DATA_PORT]);
+		final int uriColIdx = getUriColIdx(inSpecs[DATA]);
 
 		// initialze the settings
 
-		final DataTableSpec spec = (DataTableSpec) inSpecs[DATA_PORT];
+		final DataTableSpec spec = (DataTableSpec) inSpecs[DATA];
 
 		final DataColumnSpec imgSpec = new DataColumnSpecCreator(
 				DataTableSpec.getUniqueColumnName(spec, "Image" + m_columnSuffixModel.getStringValue()),
@@ -240,7 +250,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 			public void runFinal(final PortInput[] inputs, final PortOutput[] outputs, final ExecutionContext exec)
 					throws Exception {
 
-				final RowInput in = (RowInput) inputs[DATA_PORT];
+				final RowInput in = (RowInput) inputs[DATA];
 				final RowOutput out = (RowOutput) outputs[0];
 
 				final AtomicInteger encounteredExceptionsCount = new AtomicInteger(0);
