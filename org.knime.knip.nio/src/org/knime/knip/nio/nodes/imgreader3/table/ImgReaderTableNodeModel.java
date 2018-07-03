@@ -93,17 +93,20 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 		final ImgPlusCellFactory cellFactory = new ImgPlusCellFactory(exec);
 		final AtomicInteger errorCount = new AtomicInteger(0);
 
-		final PortObjectSpec[] outSpec = createOutSpec(
-				new PortObjectSpec[] { inObjects[CONNECTION].getSpec(), inObjects[DATA].getSpec() });
+		final ConnectionInformation connectionInfo;
+		final PortObjectSpec[] outSpec;
+		if (inObjects[CONNECTION] != null) {
+			connectionInfo = ((ConnectionInformationPortObject) inObjects[CONNECTION]).getConnectionInformation();
+			outSpec = createOutSpec(
+					new PortObjectSpec[] { inObjects[CONNECTION].getSpec(), inObjects[DATA].getSpec() });
+		} else {
+			connectionInfo = null;
+			outSpec = createOutSpec(new PortObjectSpec[] { null, inObjects[DATA].getSpec() });
+		}
 
 		final BufferedDataTable in = (BufferedDataTable) inObjects[DATA];
 		final BufferedDataContainer container = exec.createDataContainer((DataTableSpec) outSpec[0]);
 		final int uriColIdx = getUriColIdx(in.getDataTableSpec());
-
-		ConnectionInformation connectionInfo = null;
-		if (inObjects[CONNECTION] != null) {
-			connectionInfo = ((ConnectionInformationPortObject) inObjects[CONNECTION]).getConnectionInformation();
-		}
 
 		final boolean checkFormat = m_checkFileFormatModel.getBooleanValue();
 		final String factoryname = m_imgFactoryModel.getStringValue();
