@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.knime.knip.nio.libs;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-ClassPath: nio-libs.jar,
  libs/scifio-1.0.0-SNAPSHOT.jar,
- libs/scifio-jai-imageio-1.1.2-SNAPSHOT.jar,
+ libs/scifio-jai-imageio-1.1.1.jar,
  libs/imglib2-cache-1.0.0-beta-10-SNAPSHOT.jar
 Bundle-Vendor: 
 Require-Bundle: org.eclipse.core.runtime,
