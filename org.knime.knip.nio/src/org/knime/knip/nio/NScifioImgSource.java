@@ -52,19 +52,16 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Parser;
-import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ChannelFiller;
 import io.scif.filters.PlaneSeparator;
 import io.scif.filters.ReaderFilter;
-import io.scif.gui.AWTImageTools;
 import io.scif.img.ImageRegion;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgUtilityService;
 import io.scif.img.Range;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -84,7 +81,6 @@ import org.apache.log4j.Level;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.base.exceptions.KNIPRuntimeException;
 import org.knime.knip.core.KNIPLogService;
-import org.knime.knip.core.types.NativeTypes;
 import org.knime.knip.core.util.MiscViews;
 import org.scijava.io.location.Location;
 
@@ -225,31 +221,17 @@ public class NScifioImgSource implements NIOImgSource {
 		}
 		try {
 			final ImgPlus<RealType> ret = MiscViews.cleanImgPlus(((List<ImgPlus>) m_imgOpener.openImgs(getReader(loc),
-					getPixelType(loc, currentSeries), m_imgFactory, options)).get(0));
+					m_imgFactory.imgFactory(getPixelType(loc, currentSeries)), options)).get(0));
 			org.apache.log4j.Logger.getLogger(KNIPLogService.class.getSimpleName()).setLevel(m_rootLvl);
 			return ret;
 		} catch (Exception e) {
-			m_reader.closeNow();
+			if (m_reader != null) {
+				m_reader.closeNow();
+			}
 			m_reader = null;
 			throw e;
 		}
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public BufferedImage getThumbnail(final Location loc) throws Exception {
-		final Reader r = getReader(loc);
-		final int sizeX = (int) r.getMetadata().get(0).getThumbSizeX();
-		final int sizeY = (int) r.getMetadata().get(0).getThumbSizeY();
-
-		// image index / plane index
-		final Plane pl = r.openThumbPlane(0, 0);
-
-		return AWTImageTools.makeImage(pl.getBytes(), sizeX, sizeY,
-				NativeTypes.getPixelType(getPixelType(loc, 0)).isSigned());
 	}
 
 	// META DATA
@@ -313,9 +295,7 @@ public class NScifioImgSource implements NIOImgSource {
 	private UnclosableReaderFilter getReader(final Location loc) throws FormatException, IOException {
 		org.apache.log4j.Logger.getLogger(KNIPLogService.class.getSimpleName()).setLevel(Level.ERROR);
 		if (m_reader == null || (!m_currentFile.equals(loc) && m_checkFileFormat)) {
-			final Format format = NIOGateway.scifio().format().getFormat(loc,
-					new SCIFIOConfig().checkerSetOpen(true));
-			
+			final Format format = NIOGateway.scifio().format().getFormat(loc, new SCIFIOConfig().checkerSetOpen(true));
 
 			final UnclosableReaderFilter r = new UnclosableReaderFilter(format.createReader());
 

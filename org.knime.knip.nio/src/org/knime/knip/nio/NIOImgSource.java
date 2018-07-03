@@ -50,15 +50,12 @@ package org.knime.knip.nio;
 
 import io.scif.FormatException;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
 import net.imagej.ImgPlus;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.TypedAxis;
-import net.imglib2.img.Img;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Pair;
 
@@ -80,10 +77,8 @@ public interface NIOImgSource {
 
 	/**
 	 *
-	 * @param loc
-	 *            description of the exact image source (URL, ...)
-	 * @param currentSeries
-	 *            image number in a dataset with multiple images
+	 * @param loc           description of the exact image source (URL, ...)
+	 * @param currentSeries image number in a dataset with multiple images
 	 * @return list of Axis
 	 * @throws Exception
 	 */
@@ -91,10 +86,8 @@ public interface NIOImgSource {
 
 	/**
 	 *
-	 * @param currentSeries
-	 *            image number in a dataset with multiple images
-	 * @param loc
-	 *            description of the exact image source (URL, ...)
+	 * @param currentSeries image number in a dataset with multiple images
+	 * @param loc           description of the exact image source (URL, ...)
 	 * @return the size of the image object behind the reference
 	 *
 	 * @throws Exception
@@ -103,10 +96,8 @@ public interface NIOImgSource {
 	public long[] getDimensions(Location loc, int currentSeries) throws Exception;
 
 	/**
-	 * @param Location
-	 *            location location of the exact image source
-	 * @param currentSeries
-	 *            image number in a dataset with multiple images
+	 * @param Location      location location of the exact image source
+	 * @param currentSeries image number in a dataset with multiple images
 	 * @return the complete image
 	 *
 	 * @throws Exception
@@ -118,28 +109,26 @@ public interface NIOImgSource {
 	 * Retrieves the sub image at the given interval. In case of slower image
 	 * sources, the image planes should be created when needed.
 	 *
-	 * @param location
-	 *             location of the exact image source
-	 * @param axisSelectionConstraints
-	 *            allows to specify selected indices for the axes. Per default all
-	 *            indices are considered to be selected <br>
-	 *            axisSelectionConstraints can be <code>null</code>
-	 * @param currentSeries
-	 *            image number in a dataset with multiple images
+	 * @param location                 location of the exact image source
+	 * @param axisSelectionConstraints allows to specify selected indices for the
+	 *                                 axes. Per default all indices are considered
+	 *                                 to be selected <br>
+	 *                                 axisSelectionConstraints can be
+	 *                                 <code>null</code>
+	 * @param currentSeries            image number in a dataset with multiple
+	 *                                 images
 	 *
 	 * @return the image plane
-	 * @throws Exception
-	 *             the appropriate exception, if the image can't be retrieved
+	 * @throws Exception the appropriate exception, if the image can't be retrieved
 	 */
 	@SuppressWarnings("rawtypes")
 	public ImgPlus<RealType> getImg(final Location location, final int currentSeries,
 			final Pair<TypedAxis, long[]>[] axisSelectionConstraints) throws Exception;
+
 	/**
 	 *
-	 * @param loc
-	 *            description of the exact image source (URL, ...)
-	 * @param currentSeries
-	 *            image number in a dataset with multiple images
+	 * @param loc           description of the exact image source (URL, ...)
+	 * @param currentSeries image number in a dataset with multiple images
 	 * @return the pixel type of the referenced image
 	 * @throws FormatException
 	 * @throws IOException
@@ -150,30 +139,19 @@ public interface NIOImgSource {
 	/**
 	 * The name of the img
 	 *
-	 * @param loc
-	 *            description of the exact image source (URL, ...)
+	 * @param loc description of the exact image source (URL, ...)
 	 * @return the image file name
 	 * @throws Exception
 	 */
 	public String getName(final Location loc) throws Exception;
 
 	/**
-	 * The source path of the img
+	 * The location of the img
 	 *
-	 * @param loc
-	 *            description of the exact image source (URL, ...)
+	 * @param loc description of the exact image source (URL, ...)
 	 * @return the source path
 	 * @throws Exception
 	 */
 	public String getSource(final Location loc) throws Exception;
-
-	/**
-	 * @param loc
-	 *            description of the exact image source (URL, ...)
-	 * @param planeNo
-	 *            number of the plane to be opened as thumbnail
-	 * @throws Exception
-	 */
-	public BufferedImage getThumbnail(final Location loc) throws Exception;
 
 }
