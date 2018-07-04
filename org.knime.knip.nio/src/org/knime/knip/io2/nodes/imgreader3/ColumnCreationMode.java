@@ -1,4 +1,4 @@
-package org.knime.knip.nio.nodes.imgreader3;
+package org.knime.knip.io2.nodes.imgreader3;
 
 public enum ColumnCreationMode {
 	NEW_TABLE("New Table"), APPEND("Append"), REPLACE("Replace");

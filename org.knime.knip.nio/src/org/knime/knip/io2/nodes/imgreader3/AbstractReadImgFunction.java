@@ -1,5 +1,5 @@
 
-package org.knime.knip.nio.nodes.imgreader3;
+package org.knime.knip.io2.nodes.imgreader3;
 
 import io.scif.config.SCIFIOConfig;
 
@@ -26,7 +26,7 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.util.Pair;
 import org.knime.knip.base.data.img.ImgPlusCellFactory;
 import org.knime.knip.base.node.nodesettings.SettingsModelSubsetSelection2;
-import org.knime.knip.nio.NScifioImgSource;
+import org.knime.knip.io2.ScifioImgSource;
 import org.scijava.io.location.Location;
 
 /**
@@ -52,7 +52,7 @@ public abstract class AbstractReadImgFunction<T extends RealType<T> & NativeType
 	protected final int m_selectedSeriesTo;
 
 	protected final SCIFIOConfig m_scifioConfig;
-	protected final NScifioImgSource m_imgSource;
+	protected final ScifioImgSource m_imgSource;
 	protected final ImgPlusCellFactory m_cellFactory;
 
 	public AbstractReadImgFunction(final ExecutionContext exec, final int numberOfFiles,
@@ -75,7 +75,7 @@ public abstract class AbstractReadImgFunction<T extends RealType<T> & NativeType
 
 		m_scifioConfig = new SCIFIOConfig().groupableSetGroupFiles(isGroupFiles)
 				.parserSetSaveOriginalMetadata(m_readAllMetadata);
-		m_imgSource = new NScifioImgSource(imgFactory, checkFileFormat, m_scifioConfig);
+		m_imgSource = new ScifioImgSource(imgFactory, checkFileFormat, m_scifioConfig);
 	}
 
 	protected Pair<DataRow, Optional<Throwable>> createResultFromException(final Location path, final String rowKey,

@@ -1,11 +1,11 @@
-package org.knime.knip.nio.nodes.imgreader3.table;
+package org.knime.knip.io2.nodes.imgreader3.table;
 
 
 import org.knime.core.data.uri.URIDataValue;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.knip.nio.nodes.imgreader3.AbstractImgReaderNodeDialog;
-import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings;
+import org.knime.knip.io2.nodes.imgreader3.AbstractImgReaderNodeDialog;
+import org.knime.knip.io2.nodes.imgreader3.ImgReaderSettings;
 
 
 public class ImgReaderTableNodeDialog extends AbstractImgReaderNodeDialog {

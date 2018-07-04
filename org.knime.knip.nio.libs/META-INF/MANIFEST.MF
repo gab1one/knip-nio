@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: KNIP-nio libs
-Bundle-SymbolicName: org.knime.knip.nio.libs;singleton:=true
+Bundle-Name: Libraries for org.knime.knip.io2
+Bundle-SymbolicName: org.knime.knip.io2.libs;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-ClassPath: nio-libs.jar,
  libs/scifio-1.0.0-SNAPSHOT.jar,

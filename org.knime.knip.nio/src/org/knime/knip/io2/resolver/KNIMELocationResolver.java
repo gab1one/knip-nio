@@ -1,4 +1,4 @@
-package org.knime.knip.nio.resolver;
+package org.knime.knip.io2.resolver;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -1,4 +1,4 @@
-package org.knime.knip.nio.nodes.imgreader3.table;
+package org.knime.knip.io2.nodes.imgreader3.table;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,10 +26,10 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.util.Pair;
 import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.knip.base.node.nodesettings.SettingsModelSubsetSelection2;
-import org.knime.knip.nio.NIOGateway;
-import org.knime.knip.nio.nodes.imgreader3.AbstractReadImgFunction;
-import org.knime.knip.nio.nodes.imgreader3.ColumnCreationMode;
-import org.knime.knip.nio.nodes.imgreader3.URLUtil;
+import org.knime.knip.io2.IO2Gateway;
+import org.knime.knip.io2.nodes.imgreader3.AbstractReadImgFunction;
+import org.knime.knip.io2.nodes.imgreader3.ColumnCreationMode;
+import org.knime.knip.io2.nodes.imgreader3.URLUtil;
 import org.scijava.io.location.Location;
 import org.scijava.io.location.LocationService;
 
@@ -52,7 +52,7 @@ class ReadImgTableFunction<T extends RealType<T> & NativeType<T>> extends Abstra
 		super(exec, numberOfFiles, sel, readAllMetaData, checkFileFormat, false, isGroupFiles, seriesSelectionFrom,
 				seriesSelectionTo, imgFactory);
 
-		m_locations = NIOGateway.locations();
+		m_locations = IO2Gateway.locations();
 		m_columnCreationMode = columnCreationMode;
 		m_stringIndex = stringIndex;
 	}

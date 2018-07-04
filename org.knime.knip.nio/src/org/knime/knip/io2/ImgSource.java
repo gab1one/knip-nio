@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.nio;
+package org.knime.knip.io2;
 
 import io.scif.FormatException;
 
@@ -68,7 +68,7 @@ import org.scijava.io.location.Location;
  * @author Gabriel Einsdorf (KNIME GmbH)
  *
  */
-public interface NIOImgSource {
+public interface ImgSource {
 
 	/**
 	 * Closes the source. It should be used to close opened files or connections.

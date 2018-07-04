@@ -1,4 +1,4 @@
-package org.knime.knip.nio.nodes.imgreader3;
+package org.knime.knip.io2.nodes.imgreader3;
 
 import java.net.MalformedURLException;
 import java.net.URI;

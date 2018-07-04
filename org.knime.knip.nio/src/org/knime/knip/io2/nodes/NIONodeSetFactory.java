@@ -46,62 +46,69 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.nio.nodes.imgreader3.table;
+package org.knime.knip.io2.nodes;
 
-import org.knime.core.node.NodeDialogPane;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.knip.cellviewer.CellNodeView;
-
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSetFactory;
+import org.knime.core.node.config.ConfigRO;
+import org.knime.knip.io2.nodes.imgreader3.table.ImgReaderTableNodeFactory;
 
 /**
- * The Factory class for the Image Reader Remote.
- *
+ * @author Gabriel Einsdorf (KNIME GmbH)
  */
-public class ImgReaderTableNodeFactory<T extends NativeType<T> & RealType<T>>
-		extends NodeFactory<ImgReaderTableNodeModel<T>> {
+public class NIONodeSetFactory implements NodeSetFactory {
+
+	private final Map<String, String> m_nodeFactories = new HashMap<>();
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new ImgReaderTableNodeDialog();
+	public ConfigRO getAdditionalSettings(final String id) {
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ImgReaderTableNodeModel<T> createNodeModel() {
-		return new ImgReaderTableNodeModel<>();
+	public String getAfterID(final String id) {
+		return "";
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<ImgReaderTableNodeModel<T>> createNodeView(final int i,
-			final ImgReaderTableNodeModel<T> nodeModel) {
-		return new CellNodeView<>(nodeModel);
+	public String getCategoryPath(final String id) {
+		return m_nodeFactories.get(id);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<? extends NodeFactory<? extends NodeModel>> getNodeFactory(final String id) {
+		try {
+			return (Class<? extends NodeFactory<? extends NodeModel>>) Class.forName(id);
+		} catch (final ClassNotFoundException e) {
+		}
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int getNrNodeViews() {
-		return 1;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
+	public Collection<String> getNodeFactoryIds() {
+		m_nodeFactories.put(ImgReaderTableNodeFactory.class.getCanonicalName(), "/community/knip/io");
+		return m_nodeFactories.keySet();
 	}
 
 }

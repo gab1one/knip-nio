@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.nio;
+package org.knime.knip.io2;
 
 import io.scif.Format;
 import io.scif.FormatException;
@@ -85,13 +85,13 @@ import org.knime.knip.core.util.MiscViews;
 import org.scijava.io.location.Location;
 
 /**
- * A {@link NIOImgSource} adapted to the new scifio
+ * A {@link ImgSource} adapted to the new scifio
  * 
  * @author Gabriel Einsdorf
  */
-public class NScifioImgSource implements NIOImgSource {
+public class ScifioImgSource implements ImgSource {
 
-	private static final NodeLogger LOGGER = NodeLogger.getLogger(NScifioImgSource.class);
+	private static final NodeLogger LOGGER = NodeLogger.getLogger(ScifioImgSource.class);
 
 	/* ID of the source */
 	private static final String SOURCE_ID = "New Scifio Image Source";
@@ -119,12 +119,12 @@ public class NScifioImgSource implements NIOImgSource {
 
 	private Level m_rootLvl;
 
-	public NScifioImgSource() {
+	public ScifioImgSource() {
 		this(true);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public NScifioImgSource(final boolean checkFileFormat) {
+	public ScifioImgSource(final boolean checkFileFormat) {
 		this(new ArrayImgFactory(), checkFileFormat, true);
 	}
 
@@ -137,7 +137,7 @@ public class NScifioImgSource implements NIOImgSource {
 	 * @param isGroupFiles    if a file points to a collection of files
 	 *
 	 */
-	public NScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
+	public ScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
 			final boolean isGroupFiles) {
 		this(imgFactory, checkFileFormat, new SCIFIOConfig().groupableSetGroupFiles(isGroupFiles));
 	}
@@ -152,11 +152,11 @@ public class NScifioImgSource implements NIOImgSource {
 	 *
 	 *
 	 */
-	public NScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
+	public ScifioImgSource(@SuppressWarnings("rawtypes") final ImgFactory imgFactory, final boolean checkFileFormat,
 			final SCIFIOConfig config) {
 		m_scifioConfig = config;
 		m_checkFileFormat = checkFileFormat;
-		m_imgOpener = new ImgOpener(NIOGateway.context());
+		m_imgOpener = new ImgOpener(IO2Gateway.context());
 		m_imgFactory = imgFactory;
 		m_usedDifferentReaders = false;
 
@@ -282,7 +282,7 @@ public class NScifioImgSource implements NIOImgSource {
 	public RealType getPixelType(final Location loc, final int currentSeries) throws IOException, FormatException {
 
 		if (m_imgUtilsService == null) {
-			m_imgUtilsService = NIOGateway.getService(ImgUtilityService.class);
+			m_imgUtilsService = IO2Gateway.getService(ImgUtilityService.class);
 		}
 
 		final RealType type = m_imgUtilsService
@@ -295,7 +295,7 @@ public class NScifioImgSource implements NIOImgSource {
 	private UnclosableReaderFilter getReader(final Location loc) throws FormatException, IOException {
 		org.apache.log4j.Logger.getLogger(KNIPLogService.class.getSimpleName()).setLevel(Level.ERROR);
 		if (m_reader == null || (!m_currentFile.equals(loc) && m_checkFileFormat)) {
-			final Format format = NIOGateway.scifio().format().getFormat(loc, new SCIFIOConfig().checkerSetOpen(true));
+			final Format format = IO2Gateway.scifio().format().getFormat(loc, new SCIFIOConfig().checkerSetOpen(true));
 
 			final UnclosableReaderFilter r = new UnclosableReaderFilter(format.createReader());
 

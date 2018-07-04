@@ -1,4 +1,4 @@
-package org.knime.knip.nio.nodes.imgreader3.table;
+package org.knime.knip.io2.nodes.imgreader3.table;
 
 import java.io.File;
 import java.net.URI;
@@ -48,13 +48,13 @@ import org.knime.knip.base.data.img.ImgPlusCell;
 import org.knime.knip.base.data.img.ImgPlusCellFactory;
 import org.knime.knip.base.node.NodeUtils;
 import org.knime.knip.core.util.EnumUtils;
-import org.knime.knip.nio.NIOGateway;
-import org.knime.knip.nio.NScifioImgSource;
-import org.knime.knip.nio.nodes.imgreader3.AbstractImgReaderNodeModel;
-import org.knime.knip.nio.nodes.imgreader3.ColumnCreationMode;
-import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings;
-import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
-import org.knime.knip.nio.resolver.AuthAwareResolver;
+import org.knime.knip.io2.IO2Gateway;
+import org.knime.knip.io2.ScifioImgSource;
+import org.knime.knip.io2.nodes.imgreader3.AbstractImgReaderNodeModel;
+import org.knime.knip.io2.nodes.imgreader3.ColumnCreationMode;
+import org.knime.knip.io2.nodes.imgreader3.ImgReaderSettings;
+import org.knime.knip.io2.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
+import org.knime.knip.io2.resolver.AuthAwareResolver;
 import org.scijava.io.location.Location;
 import org.scijava.io.location.LocationResolver;
 import org.scijava.io.location.LocationService;
@@ -71,7 +71,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 	private final SettingsModelString m_columnSuffixModel = ImgReaderSettings.createColumnSuffixNodeModel();
 	private final SettingsModelBoolean m_appendSeriesNumberModel = ImgReaderSettings.createAppendSeriesNumberModel();
 
-	private final LocationService loc = NIOGateway.locations();
+	private final LocationService loc = IO2Gateway.locations();
 
 	protected ImgReaderTableNodeModel() {
 		super(new PortType[] { ConnectionInformationPortObject.TYPE_OPTIONAL, BufferedDataTable.TYPE },
@@ -114,7 +114,7 @@ public class ImgReaderTableNodeModel<T extends RealType<T> & NativeType<T>> exte
 
 		final boolean isGroup = m_isGroupFilesModel.getBooleanValue();
 
-		final NScifioImgSource source = new NScifioImgSource(factory, checkFormat, isGroup);
+		final ScifioImgSource source = new ScifioImgSource(factory, checkFormat, isGroup);
 		for (final DataRow row : in) {
 			final URI uri = ((URIDataValue) row.getCell(uriColIdx)).getURIContent().getURI();
 			Location resolved;

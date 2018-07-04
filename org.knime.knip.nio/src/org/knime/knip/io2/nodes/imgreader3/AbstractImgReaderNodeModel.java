@@ -1,4 +1,4 @@
-package org.knime.knip.nio.nodes.imgreader3;
+package org.knime.knip.io2.nodes.imgreader3;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortType;
 import org.knime.knip.core.util.EnumUtils;
-import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
+import org.knime.knip.io2.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
 
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;

@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.nio.nodes.imgreader3;
+package org.knime.knip.io2.nodes.imgreader3;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -56,7 +56,7 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.knip.core.util.EnumUtils;
-import org.knime.knip.nio.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
+import org.knime.knip.io2.nodes.imgreader3.ImgReaderSettings.ImgFactoryMode;
 
 /**
  * Dialog for the ImageReader to select the files and choose some additional

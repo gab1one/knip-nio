@@ -1,4 +1,4 @@
-package org.knime.knip.nio.nodes.imgreader3;
+package org.knime.knip.io2.nodes.imgreader3;
 
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
