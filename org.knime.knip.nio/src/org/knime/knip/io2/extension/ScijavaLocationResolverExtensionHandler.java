@@ -1,7 +1,5 @@
 package org.knime.knip.io2.extension;
 
-import io.scif.Format;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +8,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
+import org.scijava.io.location.LocationResolver;
 
 public class ScijavaLocationResolverExtensionHandler {
 	   private static final NodeLogger LOGGER = NodeLogger
@@ -20,17 +19,17 @@ public class ScijavaLocationResolverExtensionHandler {
 	    }
 
 	    /** The id of the IFormatReaderExtPoint extension point. */
-	    public static final String EXT_POINT_ID = "org.knime.knip.io2.ScijavaLocationHandler";
+	    public static final String EXT_POINT_ID = "org.knime.knip.io2.LocationResolver";
 
 	    /**
 	     * The attribute of the iformatreader view extension point pointing to the
 	     * factory class
 	     */
-	    public static final String EXT_POINT_ATTR_DF = "ScijavaLocationHandler";
+	    public static final String EXT_POINT_ATTR_DF = "LocationResolver";
 
-	    public static List<Format> getFormats() {
+	    public static List<LocationResolver> getResolvers() {
 
-	        List<Format> formats = new ArrayList<>();
+	        List<LocationResolver> resolvers = new ArrayList<>();
 
 	        try {
 	            final IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -56,10 +55,10 @@ public class ScijavaLocationResolverExtensionHandler {
 	                }
 
 	                try {
-	                    final Format format =
-	                            (Format)elem
-	                                    .createExecutableExtension(EXT_POINT_ATTR_DF);
-	                    formats.add(format);
+	                    final LocationResolver resolver =
+	                            (LocationResolver) elem
+						        .createExecutableExtension(EXT_POINT_ATTR_DF);
+	                    resolvers.add(resolver);
 	                } catch (final Throwable t) {
 	                    LOGGER.error("Problems during initialization of "
 	                            + "ScifioFormatExtensionPoint (with id '"
@@ -74,7 +73,7 @@ public class ScijavaLocationResolverExtensionHandler {
 	                    + "ScifioFormat extensions");
 	        }
 
-	        return formats;
+	        return resolvers;
 
 	    }
 }

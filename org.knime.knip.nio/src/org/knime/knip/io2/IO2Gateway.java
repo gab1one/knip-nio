@@ -55,7 +55,7 @@ public class IO2Gateway {
 		});
 
 		// get location resolvers
-		ScijavaLocationResolverExtensionHandler.getFormats().forEach(f -> {
+		ScijavaLocationResolverExtensionHandler.getResolvers().forEach(f -> {
 			PluginInfo<LocationResolver> info = new PluginInfo<>(f.getClass().getName(), LocationResolver.class, null,
 					f.getClass().getClassLoader());
 			f.setInfo(info);
