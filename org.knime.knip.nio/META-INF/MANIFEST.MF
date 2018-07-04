@@ -24,7 +24,7 @@ Require-Bundle: org.knime.base;bundle-version="[3.0.0,4.0.0)",
  imglib2-cache;bundle-version="1.0.9"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: knip-io.jar,
+Bundle-ClassPath: knip-io2.jar,
  libs/scifio-1.0.0-SNAPSHOT.jar,
  libs/scifio-jai-imageio-1.1.1.jar
 Export-Package: io.scif,
