@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="ScifioFormat" name="Scifio Format" schema="schema/ScifioFormat.exsd"/>
-   <extension-point id="LocationResolver" name="Scijava LocationResolver" schema="schema/LocationResolver.exsd"/>
-   <extension-point id="ScijavaService" name="Scijava Service" schema="schema/ScijavaService.exsd"/>
    <extension-point id="SciJavaPlugin" name="SciJava Plugin" schema="schema/SciJavaPlugin.exsd"/>
      <extension
            point="org.knime.workbench.repository.nodesets">
