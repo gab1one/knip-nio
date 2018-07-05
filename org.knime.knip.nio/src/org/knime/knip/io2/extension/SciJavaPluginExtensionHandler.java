@@ -8,27 +8,27 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
-import org.scijava.service.Service;
+import org.scijava.plugin.SciJavaPlugin;
 
-public class ScijavaServiceExtensionHandler {
-	private static final NodeLogger LOGGER = NodeLogger.getLogger(ScijavaServiceExtensionHandler.class);
+public class SciJavaPluginExtensionHandler {
+	private static final NodeLogger LOGGER = NodeLogger.getLogger(SciJavaPluginExtensionHandler.class);
 
-	private ScijavaServiceExtensionHandler() {
+	private SciJavaPluginExtensionHandler() {
 		// utility class
 	}
 
-	/** The id of the IFormatReaderExtPoint extension point. */
-	public static final String EXT_POINT_ID = "org.knime.knip.io2.ScijavaService";
+	/** The id of the SciJavaPlugin extension point. */
+	public static final String EXT_POINT_ID = "org.knime.knip.io2.SciJavaPlugin";
 
 	/**
-	 * The attribute of the iformatreader view extension point pointing to the
-	 * factory class
+	 * The attribute of the scijava plugin extension point pointing to the plugin
+	 * constructor
 	 */
-	public static final String EXT_POINT_ATTR_DF = "ScijavaService";
+	public static final String EXT_POINT_ATTR_DF = "SciJavaPlugin";
 
-	public static List<Service> getServices() {
+	public static List<SciJavaPlugin> getPlugins() {
 
-		List<Service> services = new ArrayList<>();
+		List<SciJavaPlugin> plugins = new ArrayList<>();
 
 		try {
 			final IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -49,20 +49,18 @@ public class ScijavaServiceExtensionHandler {
 				}
 
 				try {
-					final Service service = (Service) elem.createExecutableExtension(EXT_POINT_ATTR_DF);
-					services.add(service);
+					plugins.add((SciJavaPlugin) elem.createExecutableExtension(EXT_POINT_ATTR_DF));
 				} catch (final Throwable t) {
-					LOGGER.error("Problems during initialization of " + "ScijavaServiceExensionPoint (with id '"
-							+ operator + "'.)");
+					LOGGER.error("Problems during initialization of SciJavaPluginExensionPoint (with id '" + operator
+							+ "'.)");
 					if (decl != null) {
 						LOGGER.error("Extension " + decl + " ignored.", t);
 					}
 				}
 			}
 		} catch (final Exception e) {
-			LOGGER.error("Exception while registering " + "ScifioFormat extensions");
+			LOGGER.error("Exception while registering SciJavaPlugin extensions");
 		}
-		return services;
-
+		return plugins;
 	}
 }

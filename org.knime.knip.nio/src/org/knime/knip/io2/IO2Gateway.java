@@ -1,23 +1,19 @@
 package org.knime.knip.io2;
 
-import io.scif.Format;
 import io.scif.SCIFIO;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import net.imagej.ops.OpService;
 
-import org.knime.knip.io2.extension.ScifioFormatExtensionHandler;
-import org.knime.knip.io2.extension.ScijavaLocationResolverExtensionHandler;
-import org.knime.knip.io2.extension.ScijavaServiceExtensionHandler;
+import org.knime.knip.io2.extension.SciJavaPluginExtensionHandler;
 import org.knime.scijava.core.ResourceAwareClassLoader;
 import org.scijava.Context;
 import org.scijava.io.handle.DataHandleService;
-import org.scijava.io.location.LocationResolver;
 import org.scijava.io.location.LocationService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.DefaultPluginFinder;
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginIndex;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.service.Service;
@@ -29,7 +25,6 @@ public class IO2Gateway {
 	private static DataHandleService m_handles;
 	private static LocationService m_loc;
 	private static Context m_context;
-
 	private static SCIFIO m_scifio;
 
 	private IO2Gateway() {
@@ -38,37 +33,16 @@ public class IO2Gateway {
 		// blacklist StderrLogService to prevent logging to stdout / stderr
 		System.setProperty("scijava.plugin.blacklist", ".*StderrLogService");
 
+		// create custom plugin index
 		final PluginIndex pluginIndex = new PluginIndex(
 				new DefaultPluginFinder(new ResourceAwareClassLoader(getClass().getClassLoader(), getClass())));
-		pluginIndex.addAll(addPluginsFromExtensionPoint());
+		// get plugins from extension point
+		pluginIndex.addAll(SciJavaPluginExtensionHandler.getPlugins().stream().map(p -> {
+			final Plugin a = p.getClass().getAnnotation(Plugin.class);
+			return new PluginInfo<>(p.getClass().getName(), a.type(), a, p.getClass().getClassLoader());
+		}).collect(Collectors.toList()));
+		// create custom context with all collected plugins
 		m_context = new Context(pluginIndex);
-	}
-
-	private List<PluginInfo<?>> addPluginsFromExtensionPoint() {
-		final List<PluginInfo<?>> plugins = new ArrayList<>();
-
-		// get location resolvers
-		ScijavaLocationResolverExtensionHandler.getResolvers().forEach(rs -> {
-			final PluginInfo<LocationResolver> info = new PluginInfo<>(rs.getClass().getName(), LocationResolver.class,
-					null, rs.getClass().getClassLoader());
-			plugins.add(info);
-		});
-
-		// get services
-		ScijavaServiceExtensionHandler.getServices().forEach(s -> {
-			final PluginInfo<?> info = new PluginInfo<>(s.getClass().getName(), Service.class, null,
-					s.getClass().getClassLoader());
-			plugins.add(info);
-		});
-
-		// get formats
-		ScifioFormatExtensionHandler.getFormats().forEach(f -> {
-			final PluginInfo<?> info = new PluginInfo<>(f.getClass().getName(), Format.class, null,
-					f.getClass().getClassLoader());
-			plugins.add(info);
-		});
-
-		return plugins;
 	}
 
 	/**
